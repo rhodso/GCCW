@@ -38,6 +38,7 @@ private:
     ofCamera playerCam;
     ofCamera overheadCam;
     cycle testCycle;
+    gameObject* cameraObject;
     ofFbo fbo;
 
     ofxPanel mm;
