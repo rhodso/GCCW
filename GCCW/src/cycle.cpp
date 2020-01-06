@@ -115,12 +115,10 @@ void cycle::draw(){
             break;
     }
 
-    //ofTranslate((this->x)-6.263, (this->y)-0.015, (this->z)-2.45);
-    ofRotateDeg(rotationAmount, (rotationAngle.x), (rotationAngle.y), (rotationAngle.z));
-
+    //Rotate model to correct orientation (from heading), then draw, then pop matrix
+    ofRotateDeg(rotationAmount, (rotationAngle.x), (rotationAngle.y), (rotationAngle.z+180));
     this->model.drawFaces();
     ofPopMatrix();
-
 }
 
 void cycle::turnCycle(int turnDir){
@@ -167,16 +165,16 @@ void cycle::moveCycle(bool accel){
     //Setting x/y based on heading
     switch(tempHead){
             case 1:
-                this->x += velocity;
-                break;
-            case 2:
-                this->y += velocity;
-                break;
-            case 3:
                 this->x -= velocity;
                 break;
-            case 4:
+            case 2:
                 this->y -= velocity;
+                break;
+            case 3:
+                this->x += velocity;
+                break;
+            case 4:
+                this->y += velocity;
                 break;
         }
 
