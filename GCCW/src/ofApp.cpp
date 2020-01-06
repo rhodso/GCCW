@@ -35,7 +35,7 @@ void ofApp::setup(){
 void ofApp::update(){
 
     //Update camera in a new thread
-    std::thread camThread(&updateCamera);
+    std::thread camThread(&updateCamera, this);
 
     /*
         w = 119

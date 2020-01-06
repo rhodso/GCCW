@@ -41,6 +41,7 @@ public:
     void updateODE();
     void turnCycle(int turnDir);
     void assignModel();
+    void doCamera(ofEasyCam cam);
 
 private:
     int colour;

@@ -181,7 +181,19 @@ void cycle::moveCycle(bool accel){
 }
 
 void cycle::doCamera(ofEasyCam cam){
+    float camPos[3];
+    float camHPR[3];
 
+    camPos[0] = this->x;
+    camPos[1] = this->y;
+    camPos[2] = this->z;
+    cam.setPosition(camPos[0], camPos[1], camPos[2]);
+
+    camHPR[0] = (this->heading*90) * 180.0/M_PI;
+    camHPR[1] = 0;
+    camHPR[2] = 0;
+    ofQuaternion camRot = ofQuaternion(camHPR[0], camHPR[1], camHPR[2], 0);
+    cam.setOrientation(camRot);
 }
 
 void cycle::assignModel(){

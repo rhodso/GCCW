@@ -1,6 +1,7 @@
 #ifndef GAMEOBJECT_H
 #define GAMEOBJECT_H
 
+#include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 
 class gameObject
