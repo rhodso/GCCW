@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "cycle.h"
 #include "ofxAssimpModelLoader.h"
+#include "ofxGui.h"
 
 
 class ofApp : public ofBaseApp{
@@ -15,6 +16,7 @@ public:
     void keyPressed(int key);
     void keyReleased(int key);
     void updateCamera();
+
 
     //Unused
     void mouseMoved(int x, int y );
@@ -35,6 +37,10 @@ private:
     int keyArray[65536];
     ofCamera playerCam;
     ofCamera overheadCam;
-
     cycle testCycle;
+    ofFbo fbo;
+
+    ofxPanel mm;
+    ofImage map;
+
 };

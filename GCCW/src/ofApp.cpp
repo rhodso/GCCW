@@ -1,4 +1,5 @@
 #include "ofApp.h"
+#include "ofxGui.h"
 #include "cycle.h"
 #include <iostream>
 #include <thread>
@@ -12,6 +13,16 @@ void ofApp::setup(){
     ofVec3f upVector;
     upVector.set(0,0,1);
 
+    //fbo
+    fbo.allocate(300,300);
+    fbo.begin();
+    ofClear(0);
+    fbo.end();
+
+    //Minimap
+    mm.setup();
+    //mm.add()
+
     //Player camera
     playerCam.setNearClip(0.01);
     playerCam.setPosition(10,10,10);
@@ -19,7 +30,7 @@ void ofApp::setup(){
     playerCam.setFarClip(99999.0);
 
     //Overhead camera
-    overheadCam.setPosition(1,1,300);
+    overheadCam.setPosition(1,1,200);
     overheadCam.lookAt({0,0,0},upVector);
     overheadCam.setNearClip(0.01);
     overheadCam.setFarClip(99999.0);
@@ -43,7 +54,7 @@ void ofApp::update(){
 
     std::thread camThread(&ofApp::updateCamera, this);
 
-    /*
+    /*  Buttons
         w = 119
         a = 97
         s = 115
@@ -86,9 +97,40 @@ void ofApp::update(){
 
     //std::cout << "Cycle:\tX: " << testCycle.getX() << "\n\tY: " << testCycle.getY() << "\n\tZ: " << testCycle.getZ() << std::endl << std::endl;
 
+
+
+    //-------overhead camera-------
+    //Startup
+    fbo.begin();
+    ofClear(0);
+    overheadCam.begin();
+    ofEnableDepthTest();
+    ofPushMatrix();
+
+    //Background
+    ofBackground(20);
+
+    //Grid
+    ofSetColor(ofColor::lightCyan);
+    ofDrawGrid(1, 100, false, false, false, true);
+
+    //Testcycle
+    testCycle.draw();
+
+    //Cleanup
+    ofDisableDepthTest();
+    overheadCam.end();
+    ofPopMatrix();
+    fbo.end();
+
     camThread.join();
+
 }
 void ofApp::draw(){
+    //Need to draw everything twice in one thread because I can't
+    //make openGL calls in anything but the main thread YAY
+
+    //-------Player camera-------
     //Startup
     playerCam.begin();
     ofEnableDepthTest();
@@ -99,7 +141,7 @@ void ofApp::draw(){
 
     //Grid
     ofSetColor(ofColor::lightCyan);
-    ofDrawGrid(1.25, 100, false, false, false, true);
+    ofDrawGrid(1, 100, false, false, false, true);
 
     //Testcycle
     testCycle.draw();
@@ -108,6 +150,9 @@ void ofApp::draw(){
     ofDisableDepthTest();
     playerCam.end();
     ofPopMatrix();
+
+    fbo.draw(ofGetWidth()/2,ofGetHeight()/2);
+
 }
 void ofApp::keyPressed(int key){ keyArray[key] = 1; }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
@@ -116,6 +161,7 @@ void ofApp::updateCamera(){
     //TODO
 
 }
+
 
 //Unused
 void ofApp::mouseMoved(int x, int y ){}
