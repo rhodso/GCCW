@@ -32,6 +32,7 @@ void ofApp::setup(){
     //Overhead camera
     overheadCam.setPosition(1,1,200);
     overheadCam.lookAt({0,0,0},upVector);
+    overheadCam.setOrientation({90,0,0,0});
     overheadCam.setNearClip(0.01);
     overheadCam.setFarClip(99999.0);
 
@@ -55,8 +56,116 @@ void ofApp::setup(){
 }
 void ofApp::update(){
 
+    //Update camera in a seperate thread
     std::thread camThread(&ofApp::updateCamera, this);
 
+    //Handle keypresses in a seperate thread
+    std::thread keyPressThread(&ofApp::handelKeyPress, this);
+
+    //std::cout << "Cycle:\tX: " << testCycle.getX() << "\n\tY: " << testCycle.getY() << "\n\tZ: " << testCycle.getZ() << std::endl << std::endl;
+
+    //-------overhead camera-------
+    //Startup
+    fbo.begin();
+    ofClear(0);
+    overheadCam.begin();
+    ofEnableDepthTest();
+    ofPushMatrix();
+
+    //Background
+    ofBackground(20);
+
+    //Grid
+    ofSetColor(ofColor::lightCyan);
+    ofDrawGrid(1, 100, false, false, false, true);
+
+    //Testcycle
+    testCycle.draw();
+
+    //Cleanup
+    ofDisableDepthTest();
+    overheadCam.end();
+    ofPopMatrix();
+    fbo.end();
+
+    //Make sure the threads have finished
+    camThread.join();
+    keyPressThread.join();
+
+}
+void ofApp::draw(){
+    //Need to draw everything twice in one thread because I can't
+    //make openGL calls in anything but the main thread YAY
+
+    //-------Player camera-------
+    //Startup
+    playerCam.begin();
+    ofEnableDepthTest();
+    ofPushMatrix();
+
+    //Background
+    ofBackground(20);
+
+    //Grid
+    ofSetColor(ofColor::lightCyan);
+    ofDrawGrid(1, 100, false, false, false, true);
+
+    //Testcycle
+    testCycle.draw();
+
+    //Cleanup
+    ofDisableDepthTest();
+
+    //Minimap area
+    ofSetColor(ofColor::white);
+    ofDrawRectangle(0,0, 320, 320);
+
+    //Draw the minimap
+    fbo.draw(0,0);
+
+    playerCam.end();
+    ofPopMatrix();
+
+}
+void ofApp::keyPressed(int key){ keyArray[key] = 1; }
+void ofApp::keyReleased(int key){ keyArray[key] = 0; }
+void ofApp::updateCamera(){
+
+    //Get a vector for the camera, and an ofVec3f for the position to look at
+    float camPos[3];
+    ofVec3f pps;
+
+    //Get the XYZ
+    camPos[0] = pps.x = cameraObject->getX();
+    camPos[1] = pps.y = cameraObject->getY();
+    camPos[2] = pps.z = cameraObject->getZ();
+
+    //Add 2 to height, and set behind offset to 7
+    camPos[2] += 2;
+    int len = 7;
+
+    //Find what direction to add the offset in
+    switch((int) cameraObject->getHeading()){
+        case 1:
+            camPos[0] += len;
+            break;
+        case 2:
+            camPos[1] += len;
+            break;
+        case 3:
+            camPos[0] -= len;
+            break;
+        case 4:
+            camPos[1] -= len;
+            break;
+    }
+
+    //Set the camera's position, and set where the camera looks at
+    playerCam.setPosition(camPos[0], camPos[1], camPos[2]);
+    playerCam.lookAt(pps, {0,0,1});
+
+}
+void ofApp::handelKeyPress(){
     /*  Buttons
         w = 119
         a = 97
@@ -97,102 +206,7 @@ void ofApp::update(){
     if(!keyArray[119]){
         testCycle.moveCycle(false);
     }
-
-    std::cout << "Cycle:\tX: " << testCycle.getX() << "\n\tY: " << testCycle.getY() << "\n\tZ: " << testCycle.getZ() << std::endl << std::endl;
-
-    //-------overhead camera-------
-    //Startup
-    fbo.begin();
-    ofClear(0);
-    overheadCam.begin();
-    ofEnableDepthTest();
-    ofPushMatrix();
-
-    //Background
-    ofBackground(20);
-
-    //Grid
-    ofSetColor(ofColor::lightCyan);
-    ofDrawGrid(1, 100, false, false, false, true);
-
-    //Testcycle
-    testCycle.draw();
-
-    //Cleanup
-    ofDisableDepthTest();
-    overheadCam.end();
-    ofPopMatrix();
-    fbo.end();
-
-    camThread.join();
-
 }
-void ofApp::draw(){
-    //Need to draw everything twice in one thread because I can't
-    //make openGL calls in anything but the main thread YAY
-
-    //-------Player camera-------
-    //Startup
-    playerCam.begin();
-    ofEnableDepthTest();
-    ofPushMatrix();
-
-    //Background
-    ofBackground(20);
-
-    //Grid
-    ofSetColor(ofColor::lightCyan);
-    ofDrawGrid(1, 100, false, false, false, true);
-
-    //Testcycle
-    testCycle.draw();
-
-    //Cleanup
-    ofDisableDepthTest();
-    playerCam.end();
-    ofPopMatrix();
-
-    fbo.draw(ofGetWidth()/2,ofGetHeight()/2);
-
-}
-void ofApp::keyPressed(int key){ keyArray[key] = 1; }
-void ofApp::keyReleased(int key){ keyArray[key] = 0; }
-void ofApp::updateCamera(){
-    //Get a vector for the camera, and an ofVec3f for the position to look at
-    float camPos[3];
-    ofVec3f pps;
-
-    //Get the XYZ
-    camPos[0] = pps.x = cameraObject->getX();
-    camPos[1] = pps.y = cameraObject->getY();
-    camPos[2] = pps.z = cameraObject->getZ();
-
-    //Add 2 to height, and set behind offset to 7
-    camPos[2] += 2;
-    int len = 7;
-
-    //Find what direction to add the offset in
-    switch((int) cameraObject->getHeading()){
-        case 1:
-            camPos[0] += len;
-            break;
-        case 2:
-            camPos[1] += len;
-            break;
-        case 3:
-            camPos[0] -= len;
-            break;
-        case 4:
-            camPos[1] -= len;
-            break;
-    }
-
-    //Set the camera's position, and set where the camera looks at
-    playerCam.setPosition(camPos[0], camPos[1], camPos[2]);
-    playerCam.lookAt(pps, {0,0,1});
-
-}
-
 
 //Unused
 void ofApp::mouseMoved(int x, int y ){}

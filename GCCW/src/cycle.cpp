@@ -154,7 +154,7 @@ void cycle::moveCycle(bool accel){
     //Apply acceleration to the speed
     if(accel){
         velocity += accelForce;
-        if(velocity > 1){ //Cap velocity at 5u/frame
+        if(velocity > 1){ //Cap velocity at 1u/frame
             velocity = 1;
         }
     }

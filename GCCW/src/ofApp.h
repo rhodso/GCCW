@@ -16,7 +16,7 @@ public:
     void keyPressed(int key);
     void keyReleased(int key);
     void updateCamera();
-
+    void handelKeyPress();
 
     //Unused
     void mouseMoved(int x, int y );
