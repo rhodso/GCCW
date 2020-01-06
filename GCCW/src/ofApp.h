@@ -14,6 +14,9 @@ public:
 
     void keyPressed(int key);
     void keyReleased(int key);
+    void updateCamera();
+
+    //Unused
     void mouseMoved(int x, int y );
     void mouseDragged(int x, int y, int button);
     void mousePressed(int x, int y, int button);
@@ -24,6 +27,7 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
+
 private:
     //ODE vars
     ofPlanePrimitive groundPlane;
@@ -32,5 +36,5 @@ private:
     ofEasyCam cam;
 
     cycle testCycle;
-
+    vector<gameObject> gameObjects;
 };

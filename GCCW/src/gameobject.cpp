@@ -2,6 +2,8 @@
 #include "gameobject.h"
 #include <cstring>
 
+int gameObject::followCamCount = 0;
+
 //Constructor
 gameObject::gameObject(){
     x = y = z = 0;
@@ -27,7 +29,7 @@ float gameObject::getZ(){ return z; }
 float gameObject::getHeading(){ return heading;}
 ofQuaternion* gameObject::getRot(){ return &rot; }
 bool gameObject::getDebugDraw(){ return debugDraw; }
-
+bool gameObject::getDoFollowCam(){ return doFollowCam; }
 
 void gameObject::setX(float _x){ x = _x; }
 void gameObject::setY(float _y){ y = _y; }
@@ -39,6 +41,20 @@ void gameObject::setRot(ofQuaternion _rot){
     }
 }
 void gameObject::setDebugDraw(bool _debugDraw){ debugDraw = _debugDraw; }
+void gameObject::setDoFollowCam(bool _doFollowCam){
+    if(_doFollowCam){
+        if(followCamCount == 0){
+            doFollowCam = _doFollowCam;
+            followCamCount += 1;
+        }
+    }
+    else{
+        if(followCamCount > 0){
+            doFollowCam = _doFollowCam;
+            followCamCount -= 1;
+        }
+    }
+}
 
 //Dimensional methods
 float gameObject::getL(){ return l;}
@@ -69,3 +85,4 @@ void gameObject::setTextureFP(char* _textureFP){
 //Other methods that don't do anything, they're just here so they're inherited
 void gameObject::draw(){}
 void gameObject::doAI(){}
+void gameObject::doCamera(ofEasyCam){}

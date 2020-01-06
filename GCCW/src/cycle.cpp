@@ -1,5 +1,5 @@
 #include "cycle.h"
-#include "gameobject.h".h"
+#include "gameobject.h"
 #include "ofApp.h"
 #include "ofxAssimpModelLoader.h"
 
@@ -178,7 +178,9 @@ void cycle::moveCycle(bool accel){
                 break;
         }
 
-    //this->x += velocity;
+}
+
+void cycle::doCamera(ofEasyCam cam){
 
 }
 

@@ -14,7 +14,6 @@ public:
     //Look and feel
     char* getModelFP();
     char* getTextureFP();
-
     void setModelFP(char* _modelFP);
     void setTextureFP(char* _textureFP);
 
@@ -25,12 +24,14 @@ public:
     float getHeading();
     bool getDebugDraw();
     ofQuaternion* getRot();
+    bool getDoFollowCam();
 
     void setX(float _x);
     void setY(float _y);
     void setZ(float _z);
     void setHeading(float _heading);
     void setRot(ofQuaternion _rot);
+    void setDoFollowCam(bool _doFollowCam);
 
     //Dimensions
     float getL();
@@ -43,10 +44,11 @@ public:
 
     void setDebugDraw(bool _debugDraw);
 
+
     //Related functions
     virtual void draw();
     virtual void doAI();
-
+    virtual void doCamera(ofEasyCam);
 
 protected:
     //position
@@ -69,6 +71,8 @@ protected:
     ofxAssimpModelLoader model;
 
     bool debugDraw = false;
+    bool doFollowCam = false;
+    static int followCamCount;
 
 };
 

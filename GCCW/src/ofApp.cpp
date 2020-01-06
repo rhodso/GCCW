@@ -1,6 +1,7 @@
 #include "ofApp.h"
 #include "cycle.h"
 #include <iostream>
+#include <thread>
 
 //static const dVector3 yunit = {0,1,0}, zunit = {0,0,1};
 
@@ -28,10 +29,14 @@ void ofApp::setup(){
     testCycle.setActive(true);
     testCycle.setIsAI(false);
     testCycle.assignModel();
-
     testCycle.setDebugDraw(false);
+    gameObjects.push_back(testCycle);
 }
 void ofApp::update(){
+
+    //Update camera in a new thread
+    std::thread camThread(&updateCamera);
+
     /*
         w = 119
         a = 97
@@ -72,6 +77,9 @@ void ofApp::update(){
     if(!keyArray[119]){
         testCycle.moveCycle(false);
     }
+
+    //Make sure the camera has finished
+    camThread.join();
 }
 void ofApp::draw(){
     //Startup
@@ -97,6 +105,17 @@ void ofApp::draw(){
 void ofApp::keyPressed(int key){ keyArray[key] = 1; }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
 
+void ofApp::updateCamera(){
+    for(gameObject g : gameObjects){
+        //Find the object the camera is locked to, and process the camera
+        if(g.getDoFollowCam()){
+            g.doCamera(cam);
+            break;
+        }
+    }
+}
+
+//Unused
 void ofApp::mouseMoved(int x, int y ){}
 void ofApp::mouseDragged(int x, int y, int button){}
 void ofApp::mousePressed(int x, int y, int button){}
