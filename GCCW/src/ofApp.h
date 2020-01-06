@@ -33,8 +33,8 @@ private:
     ofPlanePrimitive groundPlane;
 
     int keyArray[65536];
-    ofEasyCam cam;
+    ofCamera playerCam;
+    ofCamera overheadCam;
 
     cycle testCycle;
-    vector<gameObject> gameObjects;
 };

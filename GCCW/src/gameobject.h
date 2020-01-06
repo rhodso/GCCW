@@ -49,7 +49,6 @@ public:
     //Related functions
     virtual void draw();
     virtual void doAI();
-    virtual void doCamera(ofEasyCam);
 
 protected:
     //position

@@ -85,4 +85,3 @@ void gameObject::setTextureFP(char* _textureFP){
 //Other methods that don't do anything, they're just here so they're inherited
 void gameObject::draw(){}
 void gameObject::doAI(){}
-void gameObject::doCamera(ofEasyCam){}

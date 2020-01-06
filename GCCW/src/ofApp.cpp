@@ -8,34 +8,40 @@
 void ofApp::setup(){
     ofDisableArbTex();
 
-    //Camera
+    //UpVector
     ofVec3f upVector;
     upVector.set(0,0,1);
-    cam.setAutoDistance(false);
-    cam.setNearClip(0.01);
-    cam.setPosition(10,10,10);
-    cam.lookAt({0,0,0},upVector);
-    cam.setUpAxis(upVector);
-    cam.setFarClip(99999.0);
+
+    //Player camera
+    playerCam.setNearClip(0.01);
+    playerCam.setPosition(10,10,10);
+    playerCam.lookAt({0,0,0},upVector);
+    playerCam.setFarClip(99999.0);
+
+    //Overhead camera
+    overheadCam.setPosition(1,1,300);
+    overheadCam.lookAt({0,0,0},upVector);
+    overheadCam.setNearClip(0.01);
+    overheadCam.setFarClip(99999.0);
 
     //Graphics ground plane
-    groundPlane.set(8,8);
-    groundPlane.mapTexCoords(0,0,4,4);
+    groundPlane.set(10,10);
+    groundPlane.mapTexCoords(0,0,5,5);
     groundPlane.setResolution(128,128);
 
     //testCycle
+    //testCycle.setX(120);
     testCycle.setColour(2);
     testCycle.setZ(0.6f);
     testCycle.setActive(true);
     testCycle.setIsAI(false);
     testCycle.assignModel();
     testCycle.setDebugDraw(false);
-    gameObjects.push_back(testCycle);
+    testCycle.setHeading(1);
 }
 void ofApp::update(){
 
-    //Update camera in a new thread
-    std::thread camThread(&updateCamera, this);
+    std::thread camThread(&ofApp::updateCamera, this);
 
     /*
         w = 119
@@ -78,12 +84,13 @@ void ofApp::update(){
         testCycle.moveCycle(false);
     }
 
-    //Make sure the camera has finished
+    //std::cout << "Cycle:\tX: " << testCycle.getX() << "\n\tY: " << testCycle.getY() << "\n\tZ: " << testCycle.getZ() << std::endl << std::endl;
+
     camThread.join();
 }
 void ofApp::draw(){
     //Startup
-    cam.begin();
+    playerCam.begin();
     ofEnableDepthTest();
     ofPushMatrix();
 
@@ -99,20 +106,15 @@ void ofApp::draw(){
 
     //Cleanup
     ofDisableDepthTest();
-    cam.end();
+    playerCam.end();
     ofPopMatrix();
 }
 void ofApp::keyPressed(int key){ keyArray[key] = 1; }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
-
 void ofApp::updateCamera(){
-    for(gameObject g : gameObjects){
-        //Find the object the camera is locked to, and process the camera
-        if(g.getDoFollowCam()){
-            g.doCamera(cam);
-            break;
-        }
-    }
+    //Update player camera here
+    //TODO
+
 }
 
 //Unused

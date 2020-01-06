@@ -124,10 +124,10 @@ void cycle::draw(){
 void cycle::turnCycle(int turnDir){
 
     /*  Heading:
-        1 = North
-        2 = East
-        3 = South
-        4 = West
+        1 = West
+        2 = North
+        3 = East
+        4 = South
     */
 
     if(turnDir == 1) { //Left
@@ -154,8 +154,8 @@ void cycle::moveCycle(bool accel){
     //Apply acceleration to the speed
     if(accel){
         velocity += accelForce;
-        if(velocity > 5){ //Cap velocity at 5u/frame
-            velocity = 5;
+        if(velocity > 1){ //Cap velocity at 5u/frame
+            velocity = 1;
         }
     }
     else{ //If no btton is being pressed, declerate
@@ -179,23 +179,6 @@ void cycle::moveCycle(bool accel){
         }
 
 }
-
-void cycle::doCamera(ofEasyCam cam){
-    float camPos[3];
-    float camHPR[3];
-
-    camPos[0] = this->x;
-    camPos[1] = this->y;
-    camPos[2] = this->z;
-    cam.setPosition(camPos[0], camPos[1], camPos[2]);
-
-    camHPR[0] = (this->heading*90) * 180.0/M_PI;
-    camHPR[1] = 0;
-    camHPR[2] = 0;
-    ofQuaternion camRot = ofQuaternion(camHPR[0], camHPR[1], camHPR[2], 0);
-    cam.setOrientation(camRot);
-}
-
 void cycle::assignModel(){
 
     debugDraw = true;
