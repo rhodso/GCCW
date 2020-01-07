@@ -222,14 +222,13 @@ void ofApp::collisions(){
     //Create a thread to see if they collide
     //Get the result
 
-
-
 }
 
 
 /* What the collision result means
     0 - Not colliding
     1 - Object 1
+    2 - Object 2
 */
 int ofApp::collide(gameObject obj1, gameObject obj2){
 

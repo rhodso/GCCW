@@ -63,8 +63,8 @@ protected:
     float l;
     float w;
     float h;
-
     float longestDim;
+    void setLongestDim();
 
     //Filepath for model
     char* modelFP;

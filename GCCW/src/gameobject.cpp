@@ -62,9 +62,9 @@ float gameObject::getW(){ return w;}
 float gameObject::getH(){ return h; }
 float gameObject::getLongestDim();
 
-void gameObject::setL(float _l){ l = _l; }
-void gameObject::setW(float _w){ w = _w; }
-void gameObject::setH(float _h){ h = _h; }
+void gameObject::setL(float _l){ l = _l; this->setLongestDim();}
+void gameObject::setW(float _w){ w = _w; this->setLongestDim(); }
+void gameObject::setH(float _h){ h = _h; this->setLongestDim(); }
 
 //Filepaths for Model and Texture
 char* gameObject::getModelFP(){ return modelFP; }
@@ -84,15 +84,18 @@ void gameObject::setTextureFP(char* _textureFP){
 }
 
 void gameObject::setLongestDim(){
-    if(l >= w){ //length is
-        if(l >=h){
+    if(l >= w){ //length is bigger than or equal to width
+        if(l >=h){ //Length is bigger than or equal to height
             longestDim = l;
+        } else{ //Length is bigger than or equal to width, but smaller than height
+            longestDim = h;
         }
-        else{
-
+    } else if (w > l){ //Width is bigger than length
+        if(w >= h){ //Width is bigger than or equal to height
+            longestDim = w;
+        } else{ //Height is bigger than width
+            longestDim = h;
         }
-    } else if (w > l){
-
     }
 }
 
