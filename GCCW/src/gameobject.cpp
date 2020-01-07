@@ -60,7 +60,7 @@ void gameObject::setDoFollowCam(bool _doFollowCam){
 float gameObject::getL(){ return l;}
 float gameObject::getW(){ return w;}
 float gameObject::getH(){ return h; }
-float gameObject::getLongestDim();
+float getLongestDim();
 
 void gameObject::setL(float _l){ l = _l; this->setLongestDim();}
 void gameObject::setW(float _w){ w = _w; this->setLongestDim(); }

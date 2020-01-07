@@ -16,9 +16,9 @@ public:
     void keyPressed(int key);
     void keyReleased(int key);
     void updateCamera();
-    void handelKeyPress();
+    void handleKeyPress();
     void collisions();
-    int collide(gameObject obj1, gameObject obj2);
+    //int collide(gameObject obj1, gameObject obj2);
 
     //Unused
     void mouseMoved(int x, int y );
@@ -43,6 +43,7 @@ private:
     ofCamera overheadCam;
     gameObject* cameraObject;
     ofFbo fbo;
+    int cameraState;
 
     //Vars
     int keyArray[65536];

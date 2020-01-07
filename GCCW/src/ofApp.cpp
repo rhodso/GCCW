@@ -26,6 +26,7 @@ void ofApp::setup(){
     //mm.add()
 
     //Player camera
+    cameraState = 0;
     playerCam.setNearClip(0.01);
     playerCam.setPosition(10,10,10);
     playerCam.lookAt({0,0,0},upVector);
@@ -60,7 +61,7 @@ void ofApp::update(){
 
     //Update camera, keypresses, and collisions in a seperate thread
     std::thread camThread(&ofApp::updateCamera, this);
-    std::thread keyPressThread(&ofApp::handelKeyPress, this);
+    std::thread keyPressThread(&ofApp::handleKeyPress, this);
     std::thread collionsMainThread(&ofApp::collisions, this);
 
     if(minimap){//-------overhead camera-------
@@ -68,8 +69,8 @@ void ofApp::update(){
         fbo.begin();
         ofClear(0);
         overheadCam.begin();
-        ofEnableDepthTest();
         ofPushMatrix();
+        ofEnableDepthTest();
 
         //Background
         ofBackground(20);
@@ -83,14 +84,15 @@ void ofApp::update(){
 
         //Cleanup
         ofDisableDepthTest();
-        overheadCam.end();
         ofPopMatrix();
+        overheadCam.end();
         fbo.end();
     }
 
     //Make sure the threads have finished
     camThread.join();
     keyPressThread.join();
+    collionsMainThread.join();
 
 }
 void ofApp::draw(){
@@ -116,6 +118,9 @@ void ofApp::draw(){
     //Cleanup
     ofDisableDepthTest();
 
+    playerCam.end();
+    ofPopMatrix();
+
     if(minimap){
         //Minimap area
         ofSetColor(ofColor::white);
@@ -125,9 +130,6 @@ void ofApp::draw(){
         fbo.draw(0,0);
     }
 
-    playerCam.end();
-    ofPopMatrix();
-
 }
 void ofApp::keyPressed(int key){ keyArray[key] = 1; }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
@@ -136,38 +138,79 @@ void ofApp::updateCamera(){
     //Get a vector for the camera, and an ofVec3f for the position to look at
     float camPos[3];
     ofVec3f pps;
+    int len;
 
     //Get the XYZ
     camPos[0] = pps.x = cameraObject->getX();
     camPos[1] = pps.y = cameraObject->getY();
     camPos[2] = pps.z = cameraObject->getZ();
 
-    //Add 2 to height, and set behind offset to 7
-    camPos[2] += 3;
-    int len = 7;
+    if (cameraState == 1){
+        camPos[2] += 2;
+        len = 3;
+        switch((int) cameraObject->getHeading()){
+            case 1:
+                camPos[1] += len;
+                break;
+            case 2:
+                camPos[0] += len;
+                break;
+            case 3:
+                camPos[1] -= len;
+                break;
+            case 4:
+                camPos[0] -= len;
+                break;
+        }
 
-    //Find what direction to add the offset in
-    switch((int) cameraObject->getHeading()){
-        case 1:
-            camPos[0] += len;
-            break;
-        case 2:
-            camPos[1] += len;
-            break;
-        case 3:
-            camPos[0] -= len;
-            break;
-        case 4:
-            camPos[1] -= len;
-            break;
+    } else if (cameraState == -1){
+        camPos[2] += 2;
+        len = 3;
+        switch((int) cameraObject->getHeading()){
+            case 1:
+                camPos[1] -= len;
+                break;
+            case 2:
+                camPos[0] -= len;
+                break;
+            case 3:
+                camPos[1] += len;
+                break;
+            case 4:
+                camPos[0] += len;
+                break;
+        }
+
+    } else{
+        //Add 2 to height, and set behind offset to 7
+        camPos[2] += 3;
+        len = 7;
+
+        //Find what direction to add the offset in
+        switch((int) cameraObject->getHeading()){
+            case 1:
+                camPos[0] += len;
+                break;
+            case 2:
+                camPos[1] += len;
+                break;
+            case 3:
+                camPos[0] -= len;
+                break;
+            case 4:
+                camPos[1] -= len;
+                break;
+        }
     }
+
+
 
     //Set the camera's position, and set where the camera looks at
     playerCam.setPosition(camPos[0], camPos[1], camPos[2]);
     playerCam.lookAt(pps, {0,0,1});
 
 }
-void ofApp::handelKeyPress(){
+void ofApp::handleKeyPress(){
     /*  Buttons
         w = 119
         a = 97
@@ -213,6 +256,16 @@ void ofApp::handelKeyPress(){
     if(!keyArray[119]){
         testCycle.moveCycle(false);
     }
+    //LeftArrow = 57356
+    //RightArrow = 57358
+    if(keyArray[57356] == 1){
+        cameraState = -1;
+    } else if(keyArray[57358] == 1){
+        cameraState = 1;
+    } else {
+        cameraState = 0;
+    }
+
 }
 void ofApp::collisions(){
     //TODO
@@ -230,10 +283,11 @@ void ofApp::collisions(){
     1 - Object 1
     2 - Object 2
 */
+/*
 int ofApp::collide(gameObject obj1, gameObject obj2){
 
 }
-
+*/
 
 //Unused
 void ofApp::mouseMoved(int x, int y ){}
