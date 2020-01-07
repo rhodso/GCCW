@@ -143,9 +143,6 @@ void cycle::turnCycle(int turnDir){
     } else if(this->heading > 4){
         this->heading = 1;
     }
-
-    std::cout << "Heading: " << this->heading << std::endl;
-
 }
 
 void cycle::moveCycle(bool accel){
@@ -154,8 +151,8 @@ void cycle::moveCycle(bool accel){
     //Apply acceleration to the speed
     if(accel){
         velocity += accelForce;
-        if(velocity > 1){ //Cap velocity at 1u/frame
-            velocity = 1;
+        if(velocity > 0.5){ //Cap velocity at 0.5u/frame
+            velocity = 0.5;
         }
     }
     else{ //If no btton is being pressed, declerate

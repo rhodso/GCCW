@@ -17,6 +17,8 @@ public:
     void keyReleased(int key);
     void updateCamera();
     void handelKeyPress();
+    void collisions();
+    int collide(gameObject obj1, gameObject obj2);
 
     //Unused
     void mouseMoved(int x, int y );
@@ -31,15 +33,20 @@ public:
 
 
 private:
-    //ODE vars
+    //Objects
+    vector<gameObject> objects;
     ofPlanePrimitive groundPlane;
+    cycle testCycle;
 
-    int keyArray[65536];
+    //Camera stuff
     ofCamera playerCam;
     ofCamera overheadCam;
-    cycle testCycle;
     gameObject* cameraObject;
     ofFbo fbo;
+
+    //Vars
+    int keyArray[65536];
+    bool minimap;
 
     ofxPanel mm;
     ofImage map;

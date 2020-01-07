@@ -60,6 +60,7 @@ void gameObject::setDoFollowCam(bool _doFollowCam){
 float gameObject::getL(){ return l;}
 float gameObject::getW(){ return w;}
 float gameObject::getH(){ return h; }
+float gameObject::getLongestDim();
 
 void gameObject::setL(float _l){ l = _l; }
 void gameObject::setW(float _w){ w = _w; }
@@ -80,6 +81,19 @@ void gameObject::setTextureFP(char* _textureFP){
     if (textureFP) delete [] textureFP;
     textureFP= new char[std::strlen(_textureFP)+1];
     strcpy(textureFP,_textureFP);
+}
+
+void gameObject::setLongestDim(){
+    if(l >= w){ //length is
+        if(l >=h){
+            longestDim = l;
+        }
+        else{
+
+        }
+    } else if (w > l){
+
+    }
 }
 
 //Other methods that don't do anything, they're just here so they're inherited
