@@ -72,6 +72,7 @@ void ofApp::update(){
         ofPushMatrix();
         ofEnableDepthTest();
 
+        /*
         //Background
         ofBackground(20);
 
@@ -81,6 +82,9 @@ void ofApp::update(){
 
         //Testcycle
         testCycle.draw();
+        */
+
+        ofClear(255,0,0,255);
 
         //Cleanup
         ofDisableDepthTest();
