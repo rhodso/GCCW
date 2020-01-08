@@ -41,6 +41,7 @@ public:
     void updateODE();
     void turnCycle(int turnDir);
     void assignModel();
+    void drawIndicator();
 
 private:
     int colour;

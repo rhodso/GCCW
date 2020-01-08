@@ -66,6 +66,16 @@ void gameObject::setL(float _l){ l = _l; this->setLongestDim();}
 void gameObject::setW(float _w){ w = _w; this->setLongestDim(); }
 void gameObject::setH(float _h){ h = _h; this->setLongestDim(); }
 
+ofVec3f gameObject::getCenter(){
+    ofVec3f centerPoint = {0,0,0};
+
+    centerPoint.x = this->getX() + (this->getL()/2);
+    centerPoint.y = this->getY() + (this->getW()/2);
+    centerPoint.z = this->getZ() + (this->getH()/2);
+
+    return centerPoint;
+}
+
 //Filepaths for Model and Texture
 char* gameObject::getModelFP(){ return modelFP; }
 char* gameObject::getTextureFP(){ return modelFP; }

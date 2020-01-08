@@ -2,10 +2,19 @@
 #define WALL_H
 
 
-class wall : public gameObject
+class wall
 {
+
 public:
     wall();
+    /*
+    ~wall();
+
+
+
+private:
+    int colour;
+*/
 };
 
 #endif // WALL_H

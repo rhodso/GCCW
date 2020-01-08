@@ -44,6 +44,8 @@ public:
     void setW(float _w);
     void setH(float _h);
 
+    ofVec3f getCenter();
+
     void setDebugDraw(bool _debugDraw);
 
 

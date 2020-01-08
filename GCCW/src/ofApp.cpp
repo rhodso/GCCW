@@ -17,23 +17,23 @@ void ofApp::setup(){
 
     //fbo
     fbo.allocate(250,250);
-    overheadCam.disableMouseInput();
     fbo.begin();
     ofClear(0);
     fbo.end();
 
     //Minimap
     mm.setup();
-    //mm.add()
 
     //Player camera
     cameraState = 0;
+    playerCam.disableMouseInput();
     playerCam.setNearClip(0.01);
     playerCam.setPosition(10,10,10);
     playerCam.lookAt({0,0,0},upVector);
     playerCam.setFarClip(99999.0);
 
     //Overhead camera
+    overheadCam.disableMouseInput();
     overheadCam.setPosition(1,1,200);
     overheadCam.lookAt({0,0,0},upVector);
     overheadCam.setOrientation({90,0,0,0});
@@ -52,22 +52,42 @@ void ofApp::setup(){
     testCycle.setActive(true);
     testCycle.setIsAI(false);
     testCycle.assignModel();
-    testCycle.setDebugDraw(false);
+    testCycle.setDebugDraw(true);
     testCycle.setHeading(1);
 
     //Update cameraObject
     cameraObject = &testCycle;
 
-    //BGM
-    bgm.load("Slipstream.mp3");
-    bgm.setLoop(true);
+    //Lighting
+    testCycleLight.setPosition(0,0,2);
+    testCycleLight.lookAt({0,0,0});
+    testCycleLight.setAmbientColor(ofColor::blue);
+    testCycleLight.enable();
+
+    testCycleIndicatorLight.setPosition(0,0,2);
+    testCycleIndicatorLight.lookAt({0,0,0});
+    testCycleIndicatorLight.setAmbientColor(ofColor::blue);
+    testCycleIndicatorLight.enable();
 }
 void ofApp::update(){
 
     //Update camera, keypresses, and collisions in a seperate thread
-    std::thread camThread(&ofApp::updateCamera, this);
-    std::thread keyPressThread(&ofApp::handleKeyPress, this);
+    //std::thread camThread(&ofApp::updateCamera, this);
+    //std::thread keyPressThread(&ofApp::handleKeyPress, this);
     std::thread collionsMainThread(&ofApp::collisions, this);
+
+    updateCamera();
+    handleKeyPress();
+    /*
+    collisions();
+    */
+
+    testCycleLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 2));
+    testCycleLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
+    testCycleIndicatorLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 15));
+    testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
+
+    //std::cout<<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << std::endl << std::endl;
 
     if(minimap){//-------overhead camera-------
         //Startup
@@ -85,9 +105,10 @@ void ofApp::update(){
     }
 
     //Make sure the threads have finished
-    camThread.join();
-    keyPressThread.join();
+    //camThread.join();
+    //keyPressThread.join();
     collionsMainThread.join();
+
 }
 void ofApp::draw(){
     //Need to draw everything twice in one thread because I can't
@@ -123,12 +144,13 @@ void ofApp::drawObjects(){
     ofSetColor(ofColor::lightCyan);
     ofDrawGrid(1, 100, false, false, false, true);
 
+    //playerIndicator
+    testCycle.drawIndicator();
+
     //Testcycle
     testCycle.draw();
 }
-void ofApp::keyPressed(int key){ keyArray[key] = 1;
-                               //std::cout << key << std::endl;
-                               }
+void ofApp::keyPressed(int key){ keyArray[key] = 1; /*std::cout << key << std::endl; */}
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
 void ofApp::updateCamera(){
 

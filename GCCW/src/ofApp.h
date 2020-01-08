@@ -50,6 +50,13 @@ private:
     int keyArray[65536];
     bool minimap;
 
+    //Lighting
+    //ofLight m_light1;
+    ofLight testCycleLight;
+    ofLight testCycleIndicatorLight;
+
+    //vector<ofLight> lights;
+
     ofxPanel mm;
     ofImage map;
 

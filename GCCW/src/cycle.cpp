@@ -121,6 +121,33 @@ void cycle::draw(){
     ofPopMatrix();
 }
 
+void cycle::drawIndicator(){
+    //Update OF position
+    float rotationAmount;
+    ofVec3f rotationAngle;
+
+    //rot->getRotate(rotationAmount, rotationAngle);
+    rot.getRotate(rotationAmount, rotationAngle);
+
+    //Do rotation of the model
+    float tempRot = (90 * (this->heading - 1));
+    rotationAmount = tempRot;
+
+    //Draws a translucent blox that represents the hitbox of the object
+    //Setup
+    ofSetColor(ofColor::orange);
+    ofPushMatrix();
+
+    //Draw the indicator
+    ofTranslate(this->x, this->y, this->z);
+    ofDrawSphere(0,0,10,this->longestDim+2);
+
+    //Cleanup
+    ofSetColor(ofColor::white, 255);
+    ofPopMatrix();
+
+}
+
 void cycle::turnCycle(int turnDir){
 
     /*  Heading:
