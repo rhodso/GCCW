@@ -17,18 +17,14 @@ public:
     //Getters and setters
     void setColour(int _colour);
     int getColour();
-
     bool getActive();
     void setActive(bool _active);
-
     bool getIsAI();
     void setIsAI(bool _isAI);
-
     bool getLeftFlag();
     bool getRightFLag();
     void setLeftFlag(bool state);
     void setRightFlag(bool state);
-
     float getVelocity();
     void setVelocity(float _velocity);
 
@@ -44,6 +40,7 @@ public:
     void drawIndicator();
 
 private:
+    //Private vars
     int colour;
     bool active;
     bool isAI;
@@ -51,7 +48,6 @@ private:
     bool rightFlag;
     float velocity;
     float accelForce = 0.1f;
-
 };
 
 /*

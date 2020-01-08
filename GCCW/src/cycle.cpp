@@ -48,6 +48,7 @@ void cycle::setColour(int _colour){
     }
 }
 
+//Getters and Setters
 int cycle::getColour(){ return colour; }
 bool cycle::getActive(){ return active; }
 void cycle::setActive(bool _active) {active = _active;}
@@ -69,7 +70,6 @@ void cycle::doAI(){
     }
 }
 void cycle::draw(){
-
     //Update OF position
     float rotationAmount;
     ofVec3f rotationAngle;
@@ -100,6 +100,7 @@ void cycle::draw(){
     ofPushMatrix();
     ofTranslate(this->x, this->y, (this->z)-2.45);
 
+    //Offset the model based on heading
     switch((int) this->getHeading()){
         case 1:
             ofTranslate(-6.275, 0, 0);
