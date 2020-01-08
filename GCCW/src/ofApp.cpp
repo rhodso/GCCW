@@ -7,8 +7,9 @@
 //static const dVector3 yunit = {0,1,0}, zunit = {0,0,1};
 
 void ofApp::setup(){
-    ofDisableArbTex();
 
+    //Set some vars
+    ofDisableArbTex();
     minimap = false;
 
     //UpVector
@@ -20,9 +21,6 @@ void ofApp::setup(){
     fbo.begin();
     ofClear(0);
     fbo.end();
-
-    //Minimap
-    mm.setup();
 
     //Player camera
     cameraState = 0;
@@ -52,7 +50,7 @@ void ofApp::setup(){
     testCycle.setActive(true);
     testCycle.setIsAI(false);
     testCycle.assignModel();
-    testCycle.setDebugDraw(true);
+    testCycle.setDebugDraw(false);
     testCycle.setHeading(1);
 
     //Update cameraObject
@@ -64,28 +62,19 @@ void ofApp::setup(){
     testCycleLight.setAmbientColor(ofColor::blue);
     testCycleLight.enable();
 
+    //Test cycle indicator light so that it doesn't look dark on the minimap
     testCycleIndicatorLight.setPosition(0,0,2);
     testCycleIndicatorLight.lookAt({0,0,0});
     testCycleIndicatorLight.setAmbientColor(ofColor::blue);
     testCycleIndicatorLight.enable();
 }
 void ofApp::update(){
-
-    //Update camera, keypresses, and collisions in a seperate thread
-    //std::thread camThread(&ofApp::updateCamera, this);
-    //std::thread keyPressThread(&ofApp::handleKeyPress, this);
+    //Update camera collisions in a seperate thread, because efficiency
     std::thread collionsMainThread(&ofApp::collisions, this);
 
+    //Update camera and handle keypresses in the main thread
     updateCamera();
     handleKeyPress();
-    /*
-    collisions();
-    */
-
-    testCycleLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 2));
-    testCycleLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
-    testCycleIndicatorLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 15));
-    testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
 
     //std::cout<<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << std::endl << std::endl;
 
@@ -94,9 +83,9 @@ void ofApp::update(){
         fbo.begin();
         ofClear(0);
         overheadCam.begin();
-        ofPushMatrix();
-        ofEnableDepthTest();
 
+        //Draw the objects in the main thread because I can't
+        //make OpenGL calls in anything but the main thread
         drawObjects();
 
         //Cleanup
@@ -104,9 +93,13 @@ void ofApp::update(){
         fbo.end();
     }
 
+    //Update lights
+    testCycleLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 2));
+    testCycleLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
+    testCycleIndicatorLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 15));
+    testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
+
     //Make sure the threads have finished
-    //camThread.join();
-    //keyPressThread.join();
     collionsMainThread.join();
 
 }
@@ -119,20 +112,14 @@ void ofApp::draw(){
     playerCam.begin();
     ofEnableDepthTest();
 
+    //Draw the objects in the main thread
     drawObjects();
 
     //Cleanup
     ofDisableDepthTest();
-
     playerCam.end();
-    //ofPopMatrix();
 
-    if(minimap){
-        //Minimap area
-        //ofSetColor(ofColor::white);
-        //ofDrawRectangle(0,0, 320, 320);
-
-        //Draw the minimap
+    if(minimap){ //Draw the minimap
         fbo.draw(0,0);
     }
 }
@@ -162,11 +149,13 @@ void ofApp::updateCamera(){
     //Get the XYZ
     camPos[0] = pps.x = cameraObject->getX();
     camPos[1] = pps.y = cameraObject->getY();
-    camPos[2] = pps.z = cameraObject->getZ();
+    camPos[2] = pps.z = cameraObject->getZ(); //Add 2 to Z for perspective
 
-    if (cameraState == 1){
-        camPos[2] += 2;
-        len = 3;
+    //Set len for camera X or Y offset, and set camPos[2] for Z offset
+    len = 3;
+    camPos[2] += 2;
+
+    if (cameraState == 1){ //Looking Right, so move camera to the left
         switch((int) cameraObject->getHeading()){
             case 1:
                 camPos[1] += len;
@@ -182,9 +171,7 @@ void ofApp::updateCamera(){
                 break;
         }
 
-    } else if (cameraState == -1){
-        camPos[2] += 2;
-        len = 3;
+    } else if (cameraState == -1){ //Looking left so move the camera to the right
         switch((int) cameraObject->getHeading()){
             case 1:
                 camPos[1] -= len;
@@ -200,12 +187,23 @@ void ofApp::updateCamera(){
                 break;
         }
 
-    } else{
-        //Add 2 to height, and set behind offset to 7
-        camPos[2] += 3;
-        len = 7;
-
-        //Find what direction to add the offset in
+    } else if (cameraState == 2){ //Looking behind so move camera in front
+        switch((int) cameraObject->getHeading()){
+            case 1:
+                camPos[0] -= len;
+                break;
+            case 2:
+                camPos[1] -= len;
+                break;
+            case 3:
+                camPos[0] += len;
+                break;
+            case 4:
+                camPos[1] += len;
+                break;
+        }
+    } else{ //Looking ahead so move camera behind
+        len = 5; //Change len so that player can look more ahead
         switch((int) cameraObject->getHeading()){
             case 1:
                 camPos[0] += len;
@@ -221,8 +219,6 @@ void ofApp::updateCamera(){
                 break;
         }
     }
-
-
 
     //Set the camera's position, and set where the camera looks at
     playerCam.setPosition(camPos[0], camPos[1], camPos[2]);
@@ -243,21 +239,20 @@ void ofApp::handleKeyPress(){
         RightArrow = 57358
     */
 
-    //Quit if q is pressed
-    if(keyArray[113] == 1){
+    if(keyArray[113] == 1){ //Q
         ofExit();
     }
-    if(keyArray[109] == 1){
+    if(keyArray[109] == 1){ //Minimap
         minimap = !minimap;
         keyArray[109] = 0;
     }
-    if(keyArray[97] == 1 && !testCycle.getLeftFlag()){
+    if(keyArray[97] == 1 && !testCycle.getLeftFlag()){ //A
         //If left is pressed, turn left and then don't turn left again
         testCycle.setLeftFlag(true);
         testCycle.turnCycle(1);
     }
-    else if (keyArray[100] == 1 && !testCycle.getRightFLag()){
-        //If right is pressed, tutn right and don't turn right again
+    else if (keyArray[100] == 1 && !testCycle.getRightFLag()){ //D
+        //If right is pressed, turn right and don't turn right again
         testCycle.setRightFlag(true);
         testCycle.turnCycle(2);
     }
@@ -269,19 +264,19 @@ void ofApp::handleKeyPress(){
         //Reset right flag when right is not pressed
         testCycle.setRightFlag(false);
     }
-    if (keyArray[119]){
+    if (keyArray[119]){ //W
         testCycle.moveCycle(true);
     }
     if(!keyArray[119]){
         testCycle.moveCycle(false);
     }
-    //LeftArrow = 57356
-    //RightArrow = 57358
-    if(keyArray[57356] == 1){
+    if(keyArray[57356] == 1){ //Right Arrow
         cameraState = -1;
-    } else if(keyArray[57358] == 1){
+    } else if(keyArray[57358] == 1){ //Left Arrow
         cameraState = 1;
-    } else {
+    } else if (keyArray[57359] == 1){ //Backwards Arrow
+        cameraState = 2;
+    } else { //Reset when not being held
         cameraState = 0;
     }
 }
@@ -302,7 +297,7 @@ void ofApp::collisions(){
 */
 /*
 int ofApp::collide(gameObject obj1, gameObject obj2){
-
+    // TODO
 }
 */
 

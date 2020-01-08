@@ -139,8 +139,8 @@ void cycle::drawIndicator(){
     ofPushMatrix();
 
     //Draw the indicator
-    ofTranslate(this->x, this->y, this->z);
-    ofDrawSphere(0,0,10,this->longestDim+2);
+    //ofTranslate(this->x, this->y, this->z);
+    ofDrawSphere(this->x,this->y,10,this->longestDim+2);
 
     //Cleanup
     ofSetColor(ofColor::white, 255);
