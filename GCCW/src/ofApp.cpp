@@ -16,7 +16,7 @@ void ofApp::setup(){
     upVector.set(0,0,1);
 
     //fbo
-    fbo.allocate(300,300);
+    fbo.allocate(250,250);
     overheadCam.disableMouseInput();
     fbo.begin();
     ofClear(0);
@@ -57,6 +57,10 @@ void ofApp::setup(){
 
     //Update cameraObject
     cameraObject = &testCycle;
+
+    //BGM
+    bgm.load("Slipstream.mp3");
+    bgm.setLoop(true);
 }
 void ofApp::update(){
 
@@ -70,28 +74,12 @@ void ofApp::update(){
         fbo.begin();
         ofClear(0);
         overheadCam.begin();
-
-
         ofPushMatrix();
         ofEnableDepthTest();
 
-
-        //Background
-        ofBackground(20);
-
-        //Grid
-        ofSetColor(ofColor::lightCyan);
-        ofDrawGrid(1, 100, false, false, false, true);
-
-        //Testcycle
-        testCycle.draw();
-
-
-        //ofDrawGrid(20,20,20);
+        drawObjects();
 
         //Cleanup
-        //ofDisableDepthTest();
-        //ofPopMatrix();
         overheadCam.end();
         fbo.end();
     }
@@ -100,7 +88,6 @@ void ofApp::update(){
     camThread.join();
     keyPressThread.join();
     collionsMainThread.join();
-
 }
 void ofApp::draw(){
     //Need to draw everything twice in one thread because I can't
@@ -109,26 +96,12 @@ void ofApp::draw(){
     //-------Player camera-------
     //Startup
     playerCam.begin();
-    //ofEnableDepthTest();
-    //ofPushMatrix();
+    ofEnableDepthTest();
 
-
-    //Background
-    ofBackground(20);
-
-    //Grid
-    ofSetColor(ofColor::lightCyan);
-    ofDrawGrid(1, 100, false, false, false, true);
-
-    //Testcycle
-    testCycle.draw();
-
-
-    //ofDrawGrid(20,20,20);
-
+    drawObjects();
 
     //Cleanup
-    //ofDisableDepthTest();
+    ofDisableDepthTest();
 
     playerCam.end();
     //ofPopMatrix();
@@ -141,9 +114,21 @@ void ofApp::draw(){
         //Draw the minimap
         fbo.draw(0,0);
     }
-
 }
-void ofApp::keyPressed(int key){ keyArray[key] = 1; }
+void ofApp::drawObjects(){
+    //Background
+    ofBackground(20);
+
+    //Grid
+    ofSetColor(ofColor::lightCyan);
+    ofDrawGrid(1, 100, false, false, false, true);
+
+    //Testcycle
+    testCycle.draw();
+}
+void ofApp::keyPressed(int key){ keyArray[key] = 1;
+                               //std::cout << key << std::endl;
+                               }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
 void ofApp::updateCamera(){
 
@@ -277,7 +262,6 @@ void ofApp::handleKeyPress(){
     } else {
         cameraState = 0;
     }
-
 }
 void ofApp::collisions(){
     //TODO
@@ -288,7 +272,6 @@ void ofApp::collisions(){
     //Get the result
 
 }
-
 
 /* What the collision result means
     0 - Not colliding

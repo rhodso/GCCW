@@ -15,6 +15,7 @@ public:
 
     void keyPressed(int key);
     void keyReleased(int key);
+    void drawObjects();
     void updateCamera();
     void handleKeyPress();
     void collisions();

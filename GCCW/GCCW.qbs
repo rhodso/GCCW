@@ -19,6 +19,8 @@ Project{
             "src/main.cpp",
             "src/ofApp.cpp",
             "src/ofApp.h",
+            "src/wall.cpp",
+            "src/wall.h",
         ]
 
         of.addons: [
