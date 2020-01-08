@@ -17,6 +17,7 @@ void ofApp::setup(){
 
     //fbo
     fbo.allocate(300,300);
+    overheadCam.disableMouseInput();
     fbo.begin();
     ofClear(0);
     fbo.end();
@@ -69,10 +70,12 @@ void ofApp::update(){
         fbo.begin();
         ofClear(0);
         overheadCam.begin();
+
+
         ofPushMatrix();
         ofEnableDepthTest();
 
-        /*
+
         //Background
         ofBackground(20);
 
@@ -82,13 +85,13 @@ void ofApp::update(){
 
         //Testcycle
         testCycle.draw();
-        */
 
-        ofClear(255,0,0,255);
+
+        //ofDrawGrid(20,20,20);
 
         //Cleanup
-        ofDisableDepthTest();
-        ofPopMatrix();
+        //ofDisableDepthTest();
+        //ofPopMatrix();
         overheadCam.end();
         fbo.end();
     }
@@ -106,8 +109,9 @@ void ofApp::draw(){
     //-------Player camera-------
     //Startup
     playerCam.begin();
-    ofEnableDepthTest();
-    ofPushMatrix();
+    //ofEnableDepthTest();
+    //ofPushMatrix();
+
 
     //Background
     ofBackground(20);
@@ -119,16 +123,20 @@ void ofApp::draw(){
     //Testcycle
     testCycle.draw();
 
+
+    //ofDrawGrid(20,20,20);
+
+
     //Cleanup
-    ofDisableDepthTest();
+    //ofDisableDepthTest();
 
     playerCam.end();
-    ofPopMatrix();
+    //ofPopMatrix();
 
     if(minimap){
         //Minimap area
-        ofSetColor(ofColor::white);
-        ofDrawRectangle(0,0, 320, 320);
+        //ofSetColor(ofColor::white);
+        //ofDrawRectangle(0,0, 320, 320);
 
         //Draw the minimap
         fbo.draw(0,0);

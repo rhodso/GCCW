@@ -39,8 +39,8 @@ private:
     cycle testCycle;
 
     //Camera stuff
-    ofCamera playerCam;
-    ofCamera overheadCam;
+    ofEasyCam playerCam;
+    ofEasyCam overheadCam;
     gameObject* cameraObject;
     ofFbo fbo;
     int cameraState;
