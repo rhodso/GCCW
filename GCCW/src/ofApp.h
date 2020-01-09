@@ -3,6 +3,8 @@
 #include "ofMain.h"
 #include "cycle.h"
 #include "ofxAssimpModelLoader.h"
+#include "wall.h"
+#include "boundarywall.h"
 #include "ofxGui.h"
 
 
@@ -38,6 +40,10 @@ private:
     vector<gameObject> objects;
     ofPlanePrimitive groundPlane;
     cycle testCycle;
+    boundaryWall bWallN;
+    boundaryWall bWallE;
+    boundaryWall bWallS;
+    boundaryWall bWallW;
 
     //Camera stuff
     ofEasyCam playerCam;

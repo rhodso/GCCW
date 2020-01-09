@@ -12,8 +12,12 @@ Project{
         name: { return FileInfo.baseName(sourceDirectory) }
 
         files: [
+            "src/boundarywall.cpp",
+            "src/boundarywall.h",
             "src/cycle.cpp",
             "src/cycle.h",
+            "src/cyclewall.cpp",
+            "src/cyclewall.h",
             "src/gameobject.cpp",
             "src/gameobject.h",
             "src/main.cpp",

@@ -48,7 +48,6 @@ public:
 
     void setDebugDraw(bool _debugDraw);
 
-
     //Related functions
     virtual void draw();
     virtual void doAI();

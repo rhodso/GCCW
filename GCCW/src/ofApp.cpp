@@ -56,6 +56,16 @@ void ofApp::setup(){
     //Update cameraObject
     cameraObject = &testCycle;
 
+    //BoundaryWalls
+    bWallN.setBoundary(1);
+    bWallN.setColor(ofColor::red);
+    bWallE.setBoundary(2);
+    bWallE.setColor(ofColor::blue);
+    bWallS.setBoundary(3);
+    bWallS.setColor(ofColor::green);
+    bWallW.setBoundary(4);
+    bWallW.setColor(ofColor::yellow);
+
     //Lighting
     testCycleLight.setPosition(0,0,2);
     testCycleLight.lookAt({0,0,0});
@@ -130,6 +140,12 @@ void ofApp::drawObjects(){
     //Grid
     ofSetColor(ofColor::lightCyan);
     ofDrawGrid(1, 100, false, false, false, true);
+
+    //Walls
+    bWallN.draw();
+    bWallE.draw();
+    bWallS.draw();
+    bWallW.draw();
 
     //playerIndicator
     testCycle.drawIndicator();
@@ -270,9 +286,9 @@ void ofApp::handleKeyPress(){
     if(!keyArray[119]){
         testCycle.moveCycle(false);
     }
-    if(keyArray[57356] == 1){ //Right Arrow
+    if(keyArray[57358] == 1){ //Right Arrow
         cameraState = -1;
-    } else if(keyArray[57358] == 1){ //Left Arrow
+    } else if(keyArray[57356] == 1){ //Left Arrow
         cameraState = 1;
     } else if (keyArray[57359] == 1){ //Backwards Arrow
         cameraState = 2;
