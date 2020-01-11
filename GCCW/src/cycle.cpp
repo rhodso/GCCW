@@ -169,6 +169,7 @@ void cycle::updateIndicator(float camX, float camY, float camZ){
      * function. Credit to Maria for helping with maths because I got
      * an A in GCSE maths and then a U at A-level.
     */
+
     this->indX = (((z-cycleCenter.z)*(camX-cycleCenter.x))/(camZ-cycleCenter.z)) + cycleCenter.x;
     this->indY = (((z-cycleCenter.z)*(camY-cycleCenter.y))/(camZ-cycleCenter.z)) + cycleCenter.y;
 
