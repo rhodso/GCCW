@@ -30,7 +30,6 @@ float gameObject::getHeading(){ return heading;}
 ofQuaternion* gameObject::getRot(){ return &rot; }
 bool gameObject::getDebugDraw(){ return debugDraw; }
 bool gameObject::getDoFollowCam(){ return doFollowCam; }
-int gameObject::getObjectType(){ return objectType; }
 
 void gameObject::setX(float _x){ x = _x; }
 void gameObject::setY(float _y){ y = _y; }
@@ -56,7 +55,6 @@ void gameObject::setDoFollowCam(bool _doFollowCam){
         }
     }
 }
-void gameObject::setObjectType(int _objectType){ objectType = _objectType; }
 
 //Dimensional methods
 float gameObject::getL(){ return l;}

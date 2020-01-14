@@ -26,7 +26,6 @@ public:
     bool getDebugDraw();
     ofQuaternion* getRot();
     bool getDoFollowCam();
-    int getObjectType();
 
     void setX(float _x);
     void setY(float _y);
@@ -34,7 +33,6 @@ public:
     void setHeading(float _heading);
     void setRot(ofQuaternion _rot);
     void setDoFollowCam(bool _doFollowCam);
-    void setObjectType(int _objectType);
 
     //Dimensions
     float getL();
@@ -76,17 +74,10 @@ protected:
     //Model
     ofxAssimpModelLoader model;
 
-    //Other vars
     bool debugDraw = false;
     bool doFollowCam = false;
     static int followCamCount;
-    int objectType;
-};
 
-/*
- * 0 - Cycle
- * 1 - boundaryWall
- * 2 -
-*/
+};
 
 #endif // GAMEOBJECT_H

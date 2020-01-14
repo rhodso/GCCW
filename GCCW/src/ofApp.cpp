@@ -32,7 +32,7 @@ void ofApp::setup(){
 
     //Overhead camera
     overheadCam.disableMouseInput();
-    overheadCam.setPosition(overheadCamPos);
+    overheadCam.setPosition(1,1,200);
     overheadCam.lookAt({0,0,0},upVector);
     overheadCam.setOrientation({90,0,0,0});
     overheadCam.setNearClip(0.01);
@@ -81,7 +81,6 @@ void ofApp::setup(){
 void ofApp::update(){
     //Update camera collisions in a seperate thread, because efficiency
     std::thread collionsMainThread(&ofApp::collisions, this);
-    std::thread updateIndicatorsThread(&ofApp::updateIndicators, this, overheadCamPos.x, overheadCamPos.y, overheadCamPos.z);
 
     //Update camera and handle keypresses in the main thread
     updateCamera();
@@ -111,7 +110,6 @@ void ofApp::update(){
     testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
 
     //Make sure the threads have finished
-    updateIndicatorsThread.join();
     collionsMainThread.join();
 
 }
@@ -297,10 +295,6 @@ void ofApp::handleKeyPress(){
     } else { //Reset when not being held
         cameraState = 0;
     }
-}
-void ofApp::updateIndicators(float camX, float camY, float camZ){
-    //Update cycle indicator
-    testCycle.updateIndicator(camX, camY, camZ);
 }
 void ofApp::collisions(){
     //TODO

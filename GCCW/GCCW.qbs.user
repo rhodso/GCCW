@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 4.5.2, 2020-01-11T15:03:31. -->
+<!-- Written by QtCreator 4.5.2, 2020-01-14T12:56:48. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -223,7 +223,7 @@
     <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">Qbs.RunConfiguration:GCCW.qtc_Desktop_6b6fef43---Qbs.RC.NameSeparator---GCCW</value>
     <value type="QString" key="Qbs.RunConfiguration.CommandLineArguments"></value>
     <value type="QString" key="Qbs.RunConfiguration.WorkingDirectory"></value>
-    <value type="QString" key="Qbs.RunConfiguration.WorkingDirectory.default">/home/rhodso/ofProjects/GCCW/GCCW/bin</value>
+    <value type="QString" key="Qbs.RunConfiguration.WorkingDirectory.default">/home/rhodso/ofProjects/help/GCCW-34b8fab2c4ba5be2dd36d9ebdf6c637d32e21165/GCCW/bin</value>
     <value type="uint" key="RunConfiguration.QmlDebugServerPort">3768</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>

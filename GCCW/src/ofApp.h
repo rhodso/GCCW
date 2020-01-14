@@ -21,7 +21,6 @@ public:
     void updateCamera();
     void handleKeyPress();
     void collisions();
-    void updateIndicators(float camX, float camY, float camZ);
     //int collide(gameObject obj1, gameObject obj2);
 
     //Unused
@@ -52,7 +51,6 @@ private:
     gameObject* cameraObject;
     ofFbo fbo;
     int cameraState;
-    ofVec3f overheadCamPos = {1,1,200};
 
     //Vars
     int keyArray[65536];
