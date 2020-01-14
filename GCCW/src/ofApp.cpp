@@ -83,6 +83,8 @@ void ofApp::update(){
     std::thread collionsMainThread(&ofApp::collisions, this);
 
     //Update camera and handle keypresses in the main thread
+    ofVec3f cameraPos = overheadCam.getPosition();
+    testCycle.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
     updateCamera();
     handleKeyPress();
 

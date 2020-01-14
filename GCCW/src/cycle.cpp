@@ -141,14 +141,38 @@ void cycle::drawIndicator(){
 
     //Draw the indicator
     //ofTranslate(this->x, this->y, this->z);
-    ofDrawSphere(this->x,this->y,10,this->longestDim+2);
+    ofDrawSphere(this->indX,this->indY,this->indZ,this->longestDim+2);
 
     //Cleanup
     ofSetColor(ofColor::white, 255);
     ofPopMatrix();
 
 }
+void cycle::updateIndicatorPosition(float camX, float camY, float camZ){
+    //Works for CameraZ = 200
+        //this->indX = (this->x*0.95285);
+        //this->indY = (this->y*0.95285);
 
+        float indicatorZ = 10;
+        ofVec3f cycleCenter = this->getCenter();
+
+        /*
+         * General formula to work out the position of the player indicator
+         * Given the position of the player and the camera. This needs to be
+         * done because of a sort of paralax effect when the indicator was
+         * positioned exactly over the camera. This means that we have to do
+         * some maths to work this out. Hence, updating the position and drawing
+         * is split into seperate functions, so that this can be updated in
+         * ofApp's update() function (Where it is also assigned to a different
+         * thread for performance) and then it is later drawn in the draw()
+         * function. Credit to Maria for helping with maths because I got
+         * an A in GCSE maths and then a U at A-level.
+        */
+
+        this->indX = (((indicatorZ-cycleCenter.z)*(camX-cycleCenter.x))/(camZ-cycleCenter.z)) + cycleCenter.x;
+        this->indY = (((indicatorZ-cycleCenter.z)*(camY-cycleCenter.y))/(camZ-cycleCenter.z)) + cycleCenter.y;
+        this->indZ = indicatorZ;
+}
 void cycle::turnCycle(int turnDir){
 
     /*  Heading:
@@ -172,7 +196,6 @@ void cycle::turnCycle(int turnDir){
         this->heading = 1;
     }
 }
-
 void cycle::moveCycle(bool accel){
     int tempHead = (int) this->heading;
 

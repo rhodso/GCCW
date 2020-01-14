@@ -38,6 +38,7 @@ public:
     void turnCycle(int turnDir);
     void assignModel();
     void drawIndicator();
+    void updateIndicatorPosition(float camX, float camY, float camZ);
 
 private:
     //Private vars
@@ -48,6 +49,10 @@ private:
     bool rightFlag;
     float velocity;
     float accelForce = 0.1f;
+
+    float indX;
+    float indY;
+    float indZ;
 };
 
 /*
