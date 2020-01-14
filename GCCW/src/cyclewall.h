@@ -3,6 +3,7 @@
 
 #include "wall.h"
 #include "ofMain.h"
+#include "cycle.h"
 
 class cycleWall : public wall
 {
@@ -10,6 +11,9 @@ public:
     cycleWall();
     cycleWall(ofColor _color);
     ~cycleWall();
+
+    void placeWall(cycle c);
+    void draw();
 
 private:
 
