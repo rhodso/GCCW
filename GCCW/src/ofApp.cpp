@@ -66,6 +66,11 @@ void ofApp::setup(){
     bWallW.setBoundary(4);
     bWallW.setColor(ofColor::yellow);
 
+    for(int i = 0; i < 4; i++){
+        boundaryWall b = boundaryWall();
+        b.setBoundary(i+1);
+        b.setColor(ofColor::blue);
+    }
     //Lighting
     testCycleLight.setPosition(0,0,2);
     testCycleLight.lookAt({0,0,0});
@@ -82,7 +87,7 @@ void ofApp::setup(){
 }
 void ofApp::update(){
     //Update camera collisions in a seperate thread, because efficiency
-    std::thread collionsMainThread(&ofApp::collisions, this);
+    std::thread collisionsMainThread(&ofApp::collisions, this);
 
     //Update camera and handle keypresses in the main thread
     ofVec3f cameraPos = overheadCam.getPosition();
@@ -133,7 +138,16 @@ void ofApp::update(){
     testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
 
     //Make sure the threads have finished
-    collionsMainThread.join();
+    collisionsMainThread.join();
+
+    switch(collisionsMainThread.get()){
+        case 0:
+            break;
+        case 1:
+            break;
+        case 2:
+            break;
+    }
 
     //Update cycle lastX/Y
     testCycle.updateLastX();
@@ -167,17 +181,18 @@ void ofApp::draw(){
         ss <<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << "\nHeading:\t" << testCycle.getHeading() << " ";
         switch((int) testCycle.getHeading()){
         case 1:
-            ss << "(-ve X)";
+            ss << "";
             break;
         case 2:
             ss << "(-ve Y)";
             break;
         case 3:
-            ss << "(+ve X)";
+            ss << "";
             break;
         case 4:
             ss << "(+ve Y)";
             break;
+
         }
         ss << std::endl << std::endl;
         ss << "Camera X/Y/Z: " << cameraObject->getX() << "/" << cameraObject->getY() << "/" << cameraObject->getZ() << std::endl << std::endl;
@@ -357,7 +372,16 @@ void ofApp::handleKeyPress(){
         keyArray[57346] = 0;
     }
 }
-void ofApp::collisions(){
+
+/*
+ * Result of collisions
+ * 0 - Nobody dies today
+ * 1 - Player 1 needs to die
+ * 2 - Player 2 needs to die
+*/
+int ofApp::collisions(){
+    int res = 0;
+
     //TODO
 
     //Get a list of all current gameObjects that collisions need to be processed for
@@ -365,18 +389,34 @@ void ofApp::collisions(){
     //Create a thread to see if they collide
     //Get the result
 
+    std::thread testCycleCollThread(&ofApp::collide, this, &testCycle);
+
+
+    return res;
 }
+
+
 
 /* What the collision result means
     0 - Not colliding
     1 - Object 1
-    2 - Object 2
 */
-/*
-int ofApp::collide(gameObject obj1, gameObject obj2){
+
+
+
+bool ofApp::collide(gameObject* obj1){
     // TODO
+    bool res = false;
+
+    for(cycleWall w : cycleWalls){
+
+    }
+    for(boundaryWall w : boundaryWalls){
+
+    }
+
+    return res;
 }
-*/
 
 //Unused
 void ofApp::mouseMoved(int x, int y ){}

@@ -21,8 +21,8 @@ public:
     void drawObjects();
     void updateCamera();
     void handleKeyPress();
-    void collisions();
-    //int collide(gameObject obj1, gameObject obj2);
+    int collisions();
+    bool collide(gameObject* obj1);
 
     //Unused
     void mouseMoved(int x, int y );
@@ -39,6 +39,7 @@ private:
     //Objects
     vector<gameObject> objects;
     vector<cycleWall> cycleWalls;
+    vector<boundaryWall> boundaryWalls;
     ofPlanePrimitive groundPlane;
     cycle testCycle;
     boundaryWall bWallN;
