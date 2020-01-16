@@ -1,13 +1,13 @@
 #pragma once
 
+#include <thread>
+#include <future>
 #include "ofMain.h"
 #include "cycle.h"
 #include "ofxAssimpModelLoader.h"
 #include "wall.h"
 #include "boundarywall.h"
 #include "cyclewall.h"
-#include "ofxGui.h"
-
 
 class ofApp : public ofBaseApp{
 
@@ -21,8 +21,8 @@ public:
     void drawObjects();
     void updateCamera();
     void handleKeyPress();
-    int collisions();
-    bool collide(gameObject* obj1);
+    void collisions();
+    void collide(gameObject obj1, gameObject obj2);
 
     //Unused
     void mouseMoved(int x, int y );
@@ -58,6 +58,12 @@ private:
     int keyArray[65536];
     bool minimap;
     bool debugInfo;
+    int winner;
+
+    //Multithreading vars
+    int collRes;
+    bool b_res;
+    bool b_resWatch;
 
     //Lighting
     ofLight testCycleLight;

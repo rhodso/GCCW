@@ -13,6 +13,19 @@ boundaryWall::boundaryWall(){
     this->w = 0.01;
     this->h = 2.0f;
 }
+boundaryWall::boundaryWall(ofColor _color){
+    this->color = _color;
+
+    //WallPlane
+    this->wallPlane.set(100,2);
+    this->wallPlane.mapTexCoords(0,0,5,5);
+    this->wallPlane.setResolution(128,128);
+
+    //Set constant things
+    this->l = 200.0f;
+    this->w = 0.01;
+    this->h = 2.0f;
+}
 
 //Destructors
 boundaryWall::~boundaryWall(){}

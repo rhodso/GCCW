@@ -1,8 +1,8 @@
 #include "ofApp.h"
-#include "ofxGui.h"
 #include "cycle.h"
 #include <iostream>
 #include <thread>
+#include <future>
 
 //static const dVector3 yunit = {0,1,0}, zunit = {0,0,1};
 
@@ -57,19 +57,10 @@ void ofApp::setup(){
     cameraObject = &testCycle;
 
     //BoundaryWalls
-    bWallN.setBoundary(1);
-    bWallN.setColor(ofColor::red);
-    bWallE.setBoundary(2);
-    bWallE.setColor(ofColor::blue);
-    bWallS.setBoundary(3);
-    bWallS.setColor(ofColor::green);
-    bWallW.setBoundary(4);
-    bWallW.setColor(ofColor::yellow);
-
     for(int i = 0; i < 4; i++){
-        boundaryWall b = boundaryWall();
+        boundaryWall b = boundaryWall(ofColor::blue);
         b.setBoundary(i+1);
-        b.setColor(ofColor::blue);
+        boundaryWalls.push_back(b);
     }
     //Lighting
     testCycleLight.setPosition(0,0,2);
@@ -84,120 +75,131 @@ void ofApp::setup(){
     testCycleIndicatorLight.enable();
 
     debugInfo = true;
+    winner = 0;
+    b_resWatch = true;
 }
 void ofApp::update(){
-    //Update camera collisions in a seperate thread, because efficiency
-    std::thread collisionsMainThread(&ofApp::collisions, this);
+    if(winner == 0){
+        //Update camera collisions in a seperate thread, because efficiency
+        //std::thread collisionsMainThread(&ofApp::collisions, this);
+        collisions();
 
-    //Update camera and handle keypresses in the main thread
-    ofVec3f cameraPos = overheadCam.getPosition();
-    testCycle.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
-    updateCamera();
-    handleKeyPress();
+        //Update camera and handle keypresses in the main thread
+        ofVec3f cameraPos = overheadCam.getPosition();
+        testCycle.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+        updateCamera();
+        handleKeyPress();
 
-    //Add walls
-    //std::cout << "TestCycle vars X/LX/Y/LY: " << testCycle.getX() << " " << testCycle.getLastX() << " " << testCycle.getY() << " " << testCycle.getLastY() << std::endl;
-    if((testCycle.getX() != testCycle.getLastX())||(testCycle.getY() != testCycle.getLastY())){
-        ofColor newColor;
-        switch(testCycle.getColour()){
+        //Add walls
+        //std::cout << "TestCycle vars X/LX/Y/LY: " << testCycle.getX() << " " << testCycle.getLastX() << " " << testCycle.getY() << " " << testCycle.getLastY() << std::endl;
+        if((testCycle.getX() != testCycle.getLastX())||(testCycle.getY() != testCycle.getLastY())){
+            ofColor newColor;
+            switch(testCycle.getColour()){
+                case 0:
+                    newColor = ofColor::blue;
+                    break;
+                case 1:
+                    newColor = ofColor::red;
+                    break;
+                case 2:
+                    newColor = ofColor::yellow;
+                    break;
+            }
+            cycleWalls.push_back(cycleWall(newColor, &testCycle));
+            //std::cout << "Placed new wall" << std::endl;
+        }
+
+        //std::cout<<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << std::endl << std::endl;
+
+        if(minimap){//-------overhead camera-------
+            //Startup
+            fbo.begin();
+            ofClear(0);
+            overheadCam.begin();
+
+            //Draw the objects in the main thread because I can't
+            //make OpenGL calls in anything but the main thread
+            drawObjects();
+
+            //Cleanup
+            overheadCam.end();
+            fbo.end();
+        }
+
+        //Update lights
+        testCycleLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 2));
+        testCycleLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
+        testCycleIndicatorLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 15));
+        testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
+
+        //Make sure the threads have finished
+        //collisionsMainThread.join();
+
+        switch(collRes){
             case 0:
-                newColor = ofColor::blue;
                 break;
             case 1:
-                newColor = ofColor::red;
                 break;
             case 2:
-                newColor = ofColor::yellow;
                 break;
         }
-        cycleWalls.push_back(cycleWall(newColor, &testCycle));
-        //std::cout << "Placed new wall" << std::endl;
+
+        //Update cycle lastX/Y
+        testCycle.updateLastX();
+        testCycle.updateLastY();
     }
+}
+void ofApp::draw(){
+    if(winner == 0){
+        //Need to draw everything twice in one thread because I can't
+        //make openGL calls in anything but the main thread YAY
 
-    //std::cout<<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << std::endl << std::endl;
-
-    if(minimap){//-------overhead camera-------
+        //-------Player camera-------
         //Startup
-        fbo.begin();
-        ofClear(0);
-        overheadCam.begin();
+        playerCam.begin();
+        ofEnableDepthTest();
 
-        //Draw the objects in the main thread because I can't
-        //make OpenGL calls in anything but the main thread
+        //Draw the objects in the main thread
         drawObjects();
 
         //Cleanup
-        overheadCam.end();
-        fbo.end();
-    }
+        ofDisableDepthTest();
+        playerCam.end();
 
-    //Update lights
-    testCycleLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 2));
-    testCycleLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
-    testCycleIndicatorLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 15));
-    testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
-
-    //Make sure the threads have finished
-    collisionsMainThread.join();
-
-    switch(collisionsMainThread.get()){
-        case 0:
-            break;
-        case 1:
-            break;
-        case 2:
-            break;
-    }
-
-    //Update cycle lastX/Y
-    testCycle.updateLastX();
-    testCycle.updateLastY();
-
-}
-void ofApp::draw(){
-    //Need to draw everything twice in one thread because I can't
-    //make openGL calls in anything but the main thread YAY
-
-    //-------Player camera-------
-    //Startup
-    playerCam.begin();
-    ofEnableDepthTest();
-
-    //Draw the objects in the main thread
-    drawObjects();
-
-    //Cleanup
-    ofDisableDepthTest();
-    playerCam.end();
-
-    if(minimap){ //Draw the minimap
-        fbo.draw(0,0);
-    }
-
-    if(debugInfo){
-        ofSetColor(ofColor::white);
-        stringstream ss;
-        ss << "FPS: " << ofToString(ofGetFrameRate(),0) << std::endl << std::endl;
-        ss <<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << "\nHeading:\t" << testCycle.getHeading() << " ";
-        switch((int) testCycle.getHeading()){
-        case 1:
-            ss << "";
-            break;
-        case 2:
-            ss << "(-ve Y)";
-            break;
-        case 3:
-            ss << "";
-            break;
-        case 4:
-            ss << "(+ve Y)";
-            break;
-
+        if(minimap){ //Draw the minimap
+            fbo.draw(0,0);
         }
-        ss << std::endl << std::endl;
-        ss << "Camera X/Y/Z: " << cameraObject->getX() << "/" << cameraObject->getY() << "/" << cameraObject->getZ() << std::endl << std::endl;
 
-        ofDrawBitmapString(ss.str().c_str(), 300,20);
+        if(debugInfo){
+            ofSetColor(ofColor::white);
+            stringstream ss;
+            ss << "FPS: " << ofToString(ofGetFrameRate(),0) << std::endl << std::endl;
+            ss <<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << "\nHeading:\t" << testCycle.getHeading() << " ";
+            switch((int) testCycle.getHeading()){
+            case 1:
+                ss << "";
+                break;
+            case 2:
+                ss << "(-ve Y)";
+                break;
+            case 3:
+                ss << "";
+                break;
+            case 4:
+                ss << "(+ve Y)";
+                break;
+            }
+            ss << std::endl << std::endl;
+            ss << "Camera X/Y/Z: " << cameraObject->getX() << "/" << cameraObject->getY() << "/" << cameraObject->getZ() << std::endl << std::endl;
+
+            ofDrawBitmapString(ss.str().c_str(), 300,20);
+        }
+    } else if(winner == 1){
+        ofDrawBitmapString("A winner is you!", 50, 50);
+    } else if(winner == 2){
+        ofDrawBitmapString("A winner isn't you!", 50, 50);
+    }else {
+        winner = 0;
     }
 }
 void ofApp::drawObjects(){
@@ -209,10 +211,9 @@ void ofApp::drawObjects(){
     ofDrawGrid(1, 100, false, false, false, true);
 
     //Walls
-    bWallN.draw();
-    bWallE.draw();
-    bWallS.draw();
-    bWallW.draw();
+    for(boundaryWall b : boundaryWalls){
+        b.draw();
+    }
 
     //CycleWalls
     for(cycleWall w : cycleWalls){
@@ -221,6 +222,8 @@ void ofApp::drawObjects(){
 
     //playerIndicator
     testCycle.drawIndicator();
+
+    ofSetColor(ofColor::white);
 
     //Testcycle
     testCycle.draw();
@@ -379,7 +382,7 @@ void ofApp::handleKeyPress(){
  * 1 - Player 1 needs to die
  * 2 - Player 2 needs to die
 */
-int ofApp::collisions(){
+void ofApp::collisions(){
     int res = 0;
 
     //TODO
@@ -388,34 +391,43 @@ int ofApp::collisions(){
     //Assign collision pairs
     //Create a thread to see if they collide
     //Get the result
+    //std::thread testCycleCollThread(&ofApp::collide, this);
+    //testCycleCollThread.join();
 
-    std::thread testCycleCollThread(&ofApp::collide, this, &testCycle);
 
-
-    return res;
+    for(boundaryWall w : boundaryWalls){
+        collide(testCycle,w);
+        if(b_res){
+            winner = 1;
+        }
+    }
+    for(cycleWall w : cycleWalls){
+        collide(testCycle,w);
+        if(b_res){
+            winner = 1;
+        }
+    }
 }
-
-
 
 /* What the collision result means
     0 - Not colliding
     1 - Object 1
 */
+void ofApp::collide(gameObject obj1, gameObject obj2){
 
+    b_res = false;
 
-
-bool ofApp::collide(gameObject* obj1){
-    // TODO
-    bool res = false;
-
-    for(cycleWall w : cycleWalls){
-
-    }
-    for(boundaryWall w : boundaryWalls){
-
+    if((obj1.getX() + obj1.getL()) < obj2.getX()){
+        if((obj1.getY() + obj1.getW()) < obj2.getY()){
+                b_res = true;
+        }
     }
 
-    return res;
+
+    if(b_res != b_resWatch){
+        std::cout << "b_res " << b_res << std::endl;
+        b_resWatch = b_res;
+    }
 }
 
 //Unused

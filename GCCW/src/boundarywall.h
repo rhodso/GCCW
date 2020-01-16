@@ -9,6 +9,7 @@ class boundaryWall : public wall
 public:
     //Constructors
     boundaryWall();
+    boundaryWall(ofColor _color);
 
     //Desructor
     ~boundaryWall();
@@ -16,6 +17,8 @@ public:
     //Getters and setters
     int getBoundary();
     void setBoundary(int _boundary);
+    void setColor( ofColor _color);
+    ofColor getColor();
 
     //Inherited methods
     void draw();
