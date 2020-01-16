@@ -35,7 +35,6 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-
 private:
     //Objects
     vector<gameObject> objects;
@@ -57,6 +56,7 @@ private:
     //Vars
     int keyArray[65536];
     bool minimap;
+    bool debugInfo;
 
     //Lighting
     ofLight testCycleLight;

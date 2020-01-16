@@ -9,10 +9,10 @@ class cycleWall : public wall
 {
 public:
     cycleWall();
-    cycleWall(ofColor _color, cycle c);
+    cycleWall(ofColor _color, cycle* c);
     ~cycleWall();
 
-    void placeWall(cycle c);
+    void placeWall(cycle* c);
     void draw();
 
 private:

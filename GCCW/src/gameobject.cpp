@@ -18,8 +18,8 @@ gameObject::gameObject(float _x, float _y, float _z){
 
 //Deconstructor
 gameObject::~gameObject(){
-    if(modelFP) delete [] modelFP;
-    if(textureFP) delete [] textureFP;
+    //if(modelFP) delete [] modelFP;
+    //if(textureFP) delete [] textureFP;
 }
 
 //Positional methods

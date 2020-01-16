@@ -77,6 +77,8 @@ void ofApp::setup(){
     testCycleIndicatorLight.lookAt({0,0,0});
     testCycleIndicatorLight.setAmbientColor(ofColor::blue);
     testCycleIndicatorLight.enable();
+
+    debugInfo = true;
 }
 void ofApp::update(){
     //Update camera collisions in a seperate thread, because efficiency
@@ -89,7 +91,7 @@ void ofApp::update(){
     handleKeyPress();
 
     //Add walls
-    std::cout << "TestCycle vars X/LX/Y/LY: " << testCycle.getX() << " " << testCycle.getLastX() << " " << testCycle.getY() << " " << testCycle.getLastY() << std::endl;
+    //std::cout << "TestCycle vars X/LX/Y/LY: " << testCycle.getX() << " " << testCycle.getLastX() << " " << testCycle.getY() << " " << testCycle.getLastY() << std::endl;
     if((testCycle.getX() != testCycle.getLastX())||(testCycle.getY() != testCycle.getLastY())){
         ofColor newColor;
         switch(testCycle.getColour()){
@@ -103,8 +105,8 @@ void ofApp::update(){
                 newColor = ofColor::yellow;
                 break;
         }
-        cycleWalls.push_back(cycleWall(newColor, testCycle));
-        std::cout << "Placed new wall" << std::endl;
+        cycleWalls.push_back(cycleWall(newColor, &testCycle));
+        //std::cout << "Placed new wall" << std::endl;
     }
 
     //std::cout<<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << std::endl << std::endl;
@@ -157,6 +159,31 @@ void ofApp::draw(){
     if(minimap){ //Draw the minimap
         fbo.draw(0,0);
     }
+
+    if(debugInfo){
+        ofSetColor(ofColor::white);
+        stringstream ss;
+        ss << "FPS: " << ofToString(ofGetFrameRate(),0) << std::endl << std::endl;
+        ss <<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << "\nHeading:\t" << testCycle.getHeading() << " ";
+        switch((int) testCycle.getHeading()){
+        case 1:
+            ss << "(-ve X)";
+            break;
+        case 2:
+            ss << "(-ve Y)";
+            break;
+        case 3:
+            ss << "(+ve X)";
+            break;
+        case 4:
+            ss << "(+ve Y)";
+            break;
+        }
+        ss << std::endl << std::endl;
+        ss << "Camera X/Y/Z: " << cameraObject->getX() << "/" << cameraObject->getY() << "/" << cameraObject->getZ() << std::endl << std::endl;
+
+        ofDrawBitmapString(ss.str().c_str(), 300,20);
+    }
 }
 void ofApp::drawObjects(){
     //Background
@@ -174,7 +201,6 @@ void ofApp::drawObjects(){
 
     //CycleWalls
     for(cycleWall w : cycleWalls){
-        std::cout << "Drawing wall" << std::endl;
         w.draw();
     }
 
@@ -184,7 +210,7 @@ void ofApp::drawObjects(){
     //Testcycle
     testCycle.draw();
 }
-void ofApp::keyPressed(int key){ keyArray[key] = 1; /*std::cout << key << std::endl; */}
+void ofApp::keyPressed(int key){ keyArray[key] = 1; /*std::cout << key << std::endl;*/ }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
 void ofApp::updateCamera(){
 
@@ -325,6 +351,10 @@ void ofApp::handleKeyPress(){
         cameraState = 2;
     } else { //Reset when not being held
         cameraState = 0;
+    }
+    if(keyArray[57346]){//F3
+        debugInfo = !debugInfo;
+        keyArray[57346] = 0;
     }
 }
 void ofApp::collisions(){

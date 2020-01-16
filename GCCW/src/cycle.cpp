@@ -199,6 +199,7 @@ void cycle::turnCycle(int turnDir){
     } else if(this->heading > 4){
         this->heading = 1;
     }
+
 }
 void cycle::moveCycle(bool accel){
     int tempHead = (int) this->heading;
