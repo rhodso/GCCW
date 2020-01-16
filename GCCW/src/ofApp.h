@@ -5,6 +5,7 @@
 #include "ofxAssimpModelLoader.h"
 #include "wall.h"
 #include "boundarywall.h"
+#include "cyclewall.h"
 #include "ofxGui.h"
 
 
@@ -38,6 +39,7 @@ public:
 private:
     //Objects
     vector<gameObject> objects;
+    vector<cycleWall> cycleWalls;
     ofPlanePrimitive groundPlane;
     cycle testCycle;
     boundaryWall bWallN;

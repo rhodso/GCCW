@@ -9,7 +9,7 @@ class cycleWall : public wall
 {
 public:
     cycleWall();
-    cycleWall(ofColor _color);
+    cycleWall(ofColor _color, cycle c);
     ~cycleWall();
 
     void placeWall(cycle c);

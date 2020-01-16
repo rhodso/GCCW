@@ -60,6 +60,10 @@ void cycle::setLeftFlag(bool state){ leftFlag = state; }
 void cycle::setRightFlag(bool state){ rightFlag = state; }
 float cycle::getVelocity(){ return velocity; }
 void cycle::setVelocity(float _velocity){ velocity = _velocity; }
+float cycle::getLastX(){ return lastX; }
+float cycle::getLastY(){ return lastY; }
+void cycle::updateLastX(){ this->lastX = this->x; }
+void cycle::updateLastY(){ this->lastY = this->y; }
 
 //Inherited methods
 void cycle::doAI(){

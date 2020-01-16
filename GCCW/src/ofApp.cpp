@@ -88,6 +88,25 @@ void ofApp::update(){
     updateCamera();
     handleKeyPress();
 
+    //Add walls
+    std::cout << "TestCycle vars X/LX/Y/LY: " << testCycle.getX() << " " << testCycle.getLastX() << " " << testCycle.getY() << " " << testCycle.getLastY() << std::endl;
+    if((testCycle.getX() != testCycle.getLastX())||(testCycle.getY() != testCycle.getLastY())){
+        ofColor newColor;
+        switch(testCycle.getColour()){
+            case 0:
+                newColor = ofColor::blue;
+                break;
+            case 1:
+                newColor = ofColor::red;
+                break;
+            case 2:
+                newColor = ofColor::yellow;
+                break;
+        }
+        cycleWalls.push_back(cycleWall(newColor, testCycle));
+        std::cout << "Placed new wall" << std::endl;
+    }
+
     //std::cout<<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << std::endl << std::endl;
 
     if(minimap){//-------overhead camera-------
@@ -113,6 +132,10 @@ void ofApp::update(){
 
     //Make sure the threads have finished
     collionsMainThread.join();
+
+    //Update cycle lastX/Y
+    testCycle.updateLastX();
+    testCycle.updateLastY();
 
 }
 void ofApp::draw(){
@@ -148,6 +171,12 @@ void ofApp::drawObjects(){
     bWallE.draw();
     bWallS.draw();
     bWallW.draw();
+
+    //CycleWalls
+    for(cycleWall w : cycleWalls){
+        std::cout << "Drawing wall" << std::endl;
+        w.draw();
+    }
 
     //playerIndicator
     testCycle.drawIndicator();

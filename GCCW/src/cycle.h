@@ -27,6 +27,10 @@ public:
     void setRightFlag(bool state);
     float getVelocity();
     void setVelocity(float _velocity);
+    float getLastX();
+    void updateLastX();
+    float getLastY();
+    void updateLastY();
 
     //Inherrited methods to override
     void doAI();
@@ -49,6 +53,9 @@ private:
     bool rightFlag;
     float velocity;
     float accelForce = 0.1f;
+
+    float lastX;
+    float lastY;
 
     float indX;
     float indY;

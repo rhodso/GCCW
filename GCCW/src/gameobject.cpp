@@ -6,7 +6,7 @@ int gameObject::followCamCount = 0;
 
 //Constructor
 gameObject::gameObject(){
-    x = y = z = 0;
+    x = y = z = 0;    
 }
 
 //Constructor with X, Y, and option for Z
