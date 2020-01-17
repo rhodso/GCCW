@@ -12,7 +12,7 @@ public:
     cycle(int _colour, bool _isAI, float _x, float _y, float _z=0);
 
     //Deconstructor
-    ~cycle();
+    virtual ~cycle();
 
     //Getters and setters
     void setColour(int _colour);

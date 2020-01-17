@@ -28,8 +28,10 @@ cycle::cycle(int _colour, bool _isAI, float _x, float _y, float _z){
 
 //Destructor
 cycle::~cycle(){
+    /*
     if(modelFP) delete [] modelFP;
     if(textureFP) delete [] textureFP;
+    */
 }
 
 //Getters and setters

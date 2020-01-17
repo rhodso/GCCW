@@ -18,9 +18,11 @@ void ofApp::setup(){
 
     //fbo
     fbo.allocate(250,250);
+
     fbo.begin();
     ofClear(0);
     fbo.end();
+
 
     //Player camera
     cameraState = 0;
@@ -44,7 +46,7 @@ void ofApp::setup(){
     groundPlane.setResolution(128,128);
 
     //p1
-    p1.setX(120);
+    p1.setX(80);
     p1.setColour(2);
     p1.setZ(0.6f);
     p1.setActive(true);
@@ -53,7 +55,7 @@ void ofApp::setup(){
     p1.setDebugDraw(false);
     p1.setHeading(1);
 
-    p2.setX(-120);
+    p2.setX(-80);
     p2.setColour(2);
     p2.setZ(0.6f);
     p2.setActive(true);
@@ -166,7 +168,7 @@ void ofApp::update(){
 
             //Draw the objects in the main thread because I can't
             //make OpenGL calls in anything but the main thread
-            //drawObjects();
+            drawObjects();
 
             //Cleanup
             overheadCam.end();
@@ -205,7 +207,7 @@ void ofApp::draw(){
         ofEnableDepthTest();
 
         //Draw the objects in the main thread
-        //drawObjects();
+        drawObjects();
 
         //Cleanup
         ofDisableDepthTest();
