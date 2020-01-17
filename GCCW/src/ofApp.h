@@ -22,7 +22,9 @@ public:
     void updateCamera();
     void handleKeyPress();
     void collisions();
+    void doBodyCollisions(gameObject obj);
     void collide(gameObject obj1, gameObject obj2);
+    void doAIForObjects();
 
     //Unused
     void mouseMoved(int x, int y );
@@ -40,12 +42,10 @@ private:
     vector<gameObject> objects;
     vector<cycleWall> cycleWalls;
     vector<boundaryWall> boundaryWalls;
+    vector<gameObject> aiObjects;
     ofPlanePrimitive groundPlane;
-    cycle testCycle;
-    boundaryWall bWallN;
-    boundaryWall bWallE;
-    boundaryWall bWallS;
-    boundaryWall bWallW;
+    cycle p1;
+    cycle p2;
 
     //Camera stuff
     ofEasyCam playerCam;
@@ -62,11 +62,13 @@ private:
 
     //Multithreading vars
     int collRes;
-    bool b_res;
+    int b_res;
     bool b_resWatch;
 
     //Lighting
-    ofLight testCycleLight;
-    ofLight testCycleIndicatorLight;
+    ofLight p1Light;
+    ofLight p1IndicatorLight;
+    ofLight p2Light;
+    ofLight p2IndicatorLight;
 
 };

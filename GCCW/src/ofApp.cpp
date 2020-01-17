@@ -43,18 +43,27 @@ void ofApp::setup(){
     groundPlane.mapTexCoords(0,0,5,5);
     groundPlane.setResolution(128,128);
 
-    //testCycle
-    //testCycle.setX(120);
-    testCycle.setColour(2);
-    testCycle.setZ(0.6f);
-    testCycle.setActive(true);
-    testCycle.setIsAI(false);
-    testCycle.assignModel();
-    testCycle.setDebugDraw(false);
-    testCycle.setHeading(1);
+    //p1
+    p1.setX(120);
+    p1.setColour(2);
+    p1.setZ(0.6f);
+    p1.setActive(true);
+    p1.setIsAI(false);
+    p1.assignModel();
+    p1.setDebugDraw(false);
+    p1.setHeading(1);
+
+    p2.setX(-120);
+    p2.setColour(2);
+    p2.setZ(0.6f);
+    p2.setActive(true);
+    p2.setIsAI(false);
+    p2.assignModel();
+    p2.setDebugDraw(false);
+    p2.setHeading(3);
 
     //Update cameraObject
-    cameraObject = &testCycle;
+    cameraObject = &p1;
 
     //BoundaryWalls
     for(int i = 0; i < 4; i++){
@@ -63,38 +72,50 @@ void ofApp::setup(){
         boundaryWalls.push_back(b);
     }
     //Lighting
-    testCycleLight.setPosition(0,0,2);
-    testCycleLight.lookAt({0,0,0});
-    testCycleLight.setAmbientColor(ofColor::blue);
-    testCycleLight.enable();
+    p1Light.setPosition(0,0,2);
+    p1Light.lookAt({0,0,0});
+    p1Light.setAmbientColor(ofColor::blue);
+    p1Light.enable();
 
-    //Test cycle indicator light so that it doesn't look dark on the minimap
-    testCycleIndicatorLight.setPosition(0,0,2);
-    testCycleIndicatorLight.lookAt({0,0,0});
-    testCycleIndicatorLight.setAmbientColor(ofColor::blue);
-    testCycleIndicatorLight.enable();
+    p2Light.setPosition(0,0,2);
+    p2Light.lookAt({0,0,0});
+    p2Light.setAmbientColor(ofColor::blue);
+    p2Light.enable();
+    aiObjects.push_back(p2);
+
+    //Indicator light so that it doesn't look dark on the minimap
+    p1IndicatorLight.setPosition(0,0,2);
+    p1IndicatorLight.lookAt({0,0,0});
+    p1IndicatorLight.setAmbientColor(ofColor::blue);
+    p1IndicatorLight.enable();
+
+    p2IndicatorLight.setPosition(0,0,2);
+    p2IndicatorLight.lookAt({0,0,0});
+    p2IndicatorLight.setAmbientColor(ofColor::blue);
+    p2IndicatorLight.enable();
 
     debugInfo = true;
     winner = 0;
     b_resWatch = true;
 }
 void ofApp::update(){
+    handleKeyPress();
     if(winner == 0){
         //Update camera collisions in a seperate thread, because efficiency
-        //std::thread collisionsMainThread(&ofApp::collisions, this);
-        collisions();
+        std::thread collisionsMainThread(&ofApp::collisions, this);
+        std::thread doGameObjectAI(&ofApp::doAIForObjects, this);
 
         //Update camera and handle keypresses in the main thread
         ofVec3f cameraPos = overheadCam.getPosition();
-        testCycle.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+        p1.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+        p2.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
         updateCamera();
-        handleKeyPress();
 
         //Add walls
-        //std::cout << "TestCycle vars X/LX/Y/LY: " << testCycle.getX() << " " << testCycle.getLastX() << " " << testCycle.getY() << " " << testCycle.getLastY() << std::endl;
-        if((testCycle.getX() != testCycle.getLastX())||(testCycle.getY() != testCycle.getLastY())){
+        //std::cout << "p1 vars X/LX/Y/LY: " << p1.getX() << " " << p1.getLastX() << " " << p1.getY() << " " << p1.getLastY() << std::endl;
+        if((p1.getX() != p1.getLastX())||(p1.getY() != p1.getLastY())){
             ofColor newColor;
-            switch(testCycle.getColour()){
+            switch(p1.getColour()){
                 case 0:
                     newColor = ofColor::blue;
                     break;
@@ -105,13 +126,39 @@ void ofApp::update(){
                     newColor = ofColor::yellow;
                     break;
             }
-            cycleWalls.push_back(cycleWall(newColor, &testCycle));
+            cycleWalls.push_back(cycleWall(newColor, &p1));
+            //std::cout << "Placed new wall" << std::endl;
+        }
+        if((p2.getX() != p2.getLastX())||(p2.getY() != p2.getLastY())){
+            ofColor newColor;
+            switch(p1.getColour()){
+                case 0:
+                    newColor = ofColor::blue;
+                    break;
+                case 1:
+                    newColor = ofColor::red;
+                    break;
+                case 2:
+                    newColor = ofColor::yellow;
+                    break;
+            }
+            cycleWalls.push_back(cycleWall(newColor, &p1));
             //std::cout << "Placed new wall" << std::endl;
         }
 
-        //std::cout<<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << std::endl << std::endl;
+        //Lighitng
+        p1Light.setPosition(p1.getX(), p1.getY(), (p1.getZ() + 2));
+        p1Light.lookAt({p1.getX(), p1.getY(), p1.getZ()});
+        p1IndicatorLight.setPosition(p1.getX(), p1.getY(), (p1.getZ() + 15));
+        p1IndicatorLight.lookAt({p1.getX(), p1.getY(), p1.getZ()});
 
-        if(minimap){//-------overhead camera-------
+        p2Light.setPosition(p2.getX(), p2.getY(), (p2.getZ() + 2));
+        p2Light.lookAt({p2.getX(), p2.getY(), p2.getZ()});
+        p2IndicatorLight.setPosition(p2.getX(), p2.getY(), (p2.getZ() + 15));
+        p2IndicatorLight.lookAt({p2.getX(), p2.getY(), p2.getZ()});
+
+        //Overhead camera
+        if(minimap){
             //Startup
             fbo.begin();
             ofClear(0);
@@ -119,21 +166,16 @@ void ofApp::update(){
 
             //Draw the objects in the main thread because I can't
             //make OpenGL calls in anything but the main thread
-            drawObjects();
+            //drawObjects();
 
             //Cleanup
             overheadCam.end();
             fbo.end();
         }
 
-        //Update lights
-        testCycleLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 2));
-        testCycleLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
-        testCycleIndicatorLight.setPosition(testCycle.getX(), testCycle.getY(), (testCycle.getZ() + 15));
-        testCycleIndicatorLight.lookAt({testCycle.getX(), testCycle.getY(), testCycle.getZ()});
-
         //Make sure the threads have finished
-        //collisionsMainThread.join();
+        collisionsMainThread.join();
+        doGameObjectAI.join();
 
         switch(collRes){
             case 0:
@@ -145,8 +187,11 @@ void ofApp::update(){
         }
 
         //Update cycle lastX/Y
-        testCycle.updateLastX();
-        testCycle.updateLastY();
+        p1.updateLastX();
+        p1.updateLastY();
+
+        p2.updateLastX();
+        p2.updateLastY();
     }
 }
 void ofApp::draw(){
@@ -160,7 +205,7 @@ void ofApp::draw(){
         ofEnableDepthTest();
 
         //Draw the objects in the main thread
-        drawObjects();
+        //drawObjects();
 
         //Cleanup
         ofDisableDepthTest();
@@ -174,8 +219,8 @@ void ofApp::draw(){
             ofSetColor(ofColor::white);
             stringstream ss;
             ss << "FPS: " << ofToString(ofGetFrameRate(),0) << std::endl << std::endl;
-            ss <<"TestCycle:\nX:\t" << testCycle.getX() << "\nY:\t" << testCycle.getY() << "\nHeading:\t" << testCycle.getHeading() << " ";
-            switch((int) testCycle.getHeading()){
+            ss <<"p1:\nX:\t" << p1.getX() << "\nY:\t" << p1.getY() << "\nHeading:\t" << p1.getHeading() << " ";
+            switch((int) p1.getHeading()){
             case 1:
                 ss << "";
                 break;
@@ -221,12 +266,14 @@ void ofApp::drawObjects(){
     }
 
     //playerIndicator
-    testCycle.drawIndicator();
+    p1.drawIndicator();
+    p2.drawIndicator();
 
     ofSetColor(ofColor::white);
 
-    //Testcycle
-    testCycle.draw();
+    //players
+    p1.draw();
+    p2.draw();
 }
 void ofApp::keyPressed(int key){ keyArray[key] = 1; /*std::cout << key << std::endl;*/ }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
@@ -337,29 +384,29 @@ void ofApp::handleKeyPress(){
         minimap = !minimap;
         keyArray[109] = 0;
     }
-    if(keyArray[97] == 1 && !testCycle.getLeftFlag()){ //A
+    if(keyArray[97] == 1 && !p1.getLeftFlag()){ //A
         //If left is pressed, turn left and then don't turn left again
-        testCycle.setLeftFlag(true);
-        testCycle.turnCycle(1);
+        p1.setLeftFlag(true);
+        p1.turnCycle(1);
     }
-    else if (keyArray[100] == 1 && !testCycle.getRightFLag()){ //D
+    else if (keyArray[100] == 1 && !p1.getRightFLag()){ //D
         //If right is pressed, turn right and don't turn right again
-        testCycle.setRightFlag(true);
-        testCycle.turnCycle(2);
+        p1.setRightFlag(true);
+        p1.turnCycle(2);
     }
-    if(testCycle.getLeftFlag() && keyArray[97] == 0){
+    if(p1.getLeftFlag() && keyArray[97] == 0){
         //Reset left flag when left is not pressed
-        testCycle.setLeftFlag(false);
+        p1.setLeftFlag(false);
     }
-    if(testCycle.getRightFLag() && keyArray[100] == 0){
+    if(p1.getRightFLag() && keyArray[100] == 0){
         //Reset right flag when right is not pressed
-        testCycle.setRightFlag(false);
+        p1.setRightFlag(false);
     }
     if (keyArray[119]){ //W
-        testCycle.moveCycle(true);
+        p1.moveCycle(true);
     }
     if(!keyArray[119]){
-        testCycle.moveCycle(false);
+        p1.moveCycle(false);
     }
     if(keyArray[57358] == 1){ //Right Arrow
         cameraState = -1;
@@ -375,58 +422,56 @@ void ofApp::handleKeyPress(){
         keyArray[57346] = 0;
     }
 }
+void ofApp::doAIForObjects(){
+    for(gameObject g : aiObjects){
+        g.doAI();
+    }
+}
 
-/*
- * Result of collisions
- * 0 - Nobody dies today
- * 1 - Player 1 needs to die
- * 2 - Player 2 needs to die
-*/
 void ofApp::collisions(){
     int res = 0;
+    std::thread p1CollThread(&ofApp::doBodyCollisions, this, p1);
+    std::thread p2CollThread(&ofApp::doBodyCollisions, this, p2);
 
-    //TODO
+    p1CollThread.join();
+    p2CollThread.join();
+}
 
-    //Get a list of all current gameObjects that collisions need to be processed for
-    //Assign collision pairs
-    //Create a thread to see if they collide
-    //Get the result
-    //std::thread testCycleCollThread(&ofApp::collide, this);
-    //testCycleCollThread.join();
+void ofApp::doBodyCollisions(gameObject obj){
 
+    gameObject* player1Pointer = &p1;
+    gameObject* objPointer = &obj;
 
     for(boundaryWall w : boundaryWalls){
-        collide(testCycle,w);
-        if(b_res){
-            winner = 1;
+        collide(obj,w);
+        if(b_res == 3){
+            if(objPointer == player1Pointer){
+                winner = 2;
+            } else {
+                winner = 1;
+            }
         }
     }
     for(cycleWall w : cycleWalls){
-        collide(testCycle,w);
-        if(b_res){
-            winner = 1;
+        collide(obj,w);
+        if(b_res == 3){
+            if(objPointer == player1Pointer){
+                winner = 2;
+            } else {
+                winner = 1;
+            }
         }
     }
 }
 
-/* What the collision result means
-    0 - Not colliding
-    1 - Object 1
-*/
 void ofApp::collide(gameObject obj1, gameObject obj2){
 
-    b_res = false;
+    b_res = 0;
 
     if((obj1.getX() + obj1.getL()) < obj2.getX()){
         if((obj1.getY() + obj1.getW()) < obj2.getY()){
-                b_res = true;
+                b_res = 3;
         }
-    }
-
-
-    if(b_res != b_resWatch){
-        std::cout << "b_res " << b_res << std::endl;
-        b_resWatch = b_res;
     }
 }
 
