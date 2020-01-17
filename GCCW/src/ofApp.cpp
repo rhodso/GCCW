@@ -13,7 +13,6 @@ void ofApp::setup(){
 
     //Set some vars
     ofDisableArbTex();
-    minimap = false;
 
     //UpVector
     ofVec3f upVector;
@@ -24,7 +23,6 @@ void ofApp::setup(){
     fbo.begin();
     ofClear(0);
     fbo.end();
-
 
     //Player camera
     cameraState = 0;
@@ -57,6 +55,7 @@ void ofApp::setup(){
     p1.setDebugDraw(false);
     p1.setHeading(1);
 
+    //p2
     p2.setX(-80);
     p2.setColour(2);
     p2.setZ(0.6f);
@@ -99,6 +98,7 @@ void ofApp::setup(){
     p2IndicatorLight.enable();
 
     debugInfo = true;
+    minimap = true;
     winner = 0;
     b_resWatch = true;
 }
@@ -214,8 +214,10 @@ void ofApp::draw(){
             ofDrawBitmapString(ss.str().c_str(), 300,20);
         }
     } else if(winner == 1){
+        ofSetColor(ofColor::white);
         ofDrawBitmapString("A winner is you!", 50, 50);
     } else if(winner == 2){
+        ofSetColor(ofColor::white);
         ofDrawBitmapString("A winner isn't you!", 50, 50);
     }else {
         winner = 0;
@@ -249,7 +251,7 @@ void ofApp::drawObjects(){
     p1.draw();
     p2.draw();
 }
-void ofApp::keyPressed(int key){ keyArray[key] = 1; /*std::cout << key << std::endl;*/ }
+void ofApp::keyPressed(int key){ keyArray[key] = 1; }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
 void ofApp::updateCamera(){
 
@@ -436,7 +438,6 @@ void ofApp::collisions(){
     p1CollThread.join();
     p2CollThread.join();
 }
-
 void ofApp::doBodyCollisions(gameObject obj){
 
     gameObject* player1Pointer = &p1;
@@ -463,7 +464,6 @@ void ofApp::doBodyCollisions(gameObject obj){
         }
     }
 }
-
 void ofApp::collide(gameObject obj1, gameObject obj2){
 
     b_res = 0;

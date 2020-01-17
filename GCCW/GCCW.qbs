@@ -3,10 +3,10 @@ import qbs.Process
 import qbs.File
 import qbs.FileInfo
 import qbs.TextFile
-import "/home/rhodso/oF/libs/openFrameworksCompiled/project/qtcreator/ofApp.qbs" as ofApp
+import "/opt/of/libs/openFrameworksCompiled/project/qtcreator/ofApp.qbs" as ofApp
 
 Project{
-    property string of_root: '/home/rhodso/oF'
+    property string of_root: '/opt/of'
 
     ofApp {
         name: { return FileInfo.baseName(sourceDirectory) }
@@ -29,7 +29,6 @@ Project{
 
         of.addons: [
             'ofxAssimpModelLoader',
-            'ofxGui'
         ]
 
         // additional flags for the project. the of module sets some
@@ -71,7 +70,7 @@ Project{
     // otherwise compiled per project with qbs
 
 
-    property bool precompileOfMain: false  // precompile ofMain.h
+    property bool precompileOfMain: true  // precompile ofMain.h
     // faster to recompile when including ofMain.h
     // but might use a lot of space per project
 
