@@ -1,5 +1,6 @@
 #include "ofApp.h"
 #include "cycle.h"
+#include "time.h"
 #include <iostream>
 #include <thread>
 #include <future>
@@ -7,6 +8,8 @@
 //static const dVector3 yunit = {0,1,0}, zunit = {0,0,1};
 
 void ofApp::setup(){
+
+    srand (time(NULL));
 
     //Set some vars
     ofDisableArbTex();
@@ -18,7 +21,6 @@ void ofApp::setup(){
 
     //fbo
     fbo.allocate(250,250);
-
     fbo.begin();
     ofClear(0);
     fbo.end();
@@ -101,52 +103,21 @@ void ofApp::setup(){
     b_resWatch = true;
 }
 void ofApp::update(){
+    p1.moveCycle(true);
+    p2.moveCycle(true);
     handleKeyPress();
+
     if(winner == 0){
         //Update camera collisions in a seperate thread, because efficiency
         std::thread collisionsMainThread(&ofApp::collisions, this);
         std::thread doGameObjectAI(&ofApp::doAIForObjects, this);
+        std::thread doPlayerWalls(&ofApp::doWalls, this);
 
         //Update camera and handle keypresses in the main thread
         ofVec3f cameraPos = overheadCam.getPosition();
         p1.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
         p2.updateIndicatorPosition(cameraPos.x, cameraPos.y, cameraPos.z);
         updateCamera();
-
-        //Add walls
-        //std::cout << "p1 vars X/LX/Y/LY: " << p1.getX() << " " << p1.getLastX() << " " << p1.getY() << " " << p1.getLastY() << std::endl;
-        if((p1.getX() != p1.getLastX())||(p1.getY() != p1.getLastY())){
-            ofColor newColor;
-            switch(p1.getColour()){
-                case 0:
-                    newColor = ofColor::blue;
-                    break;
-                case 1:
-                    newColor = ofColor::red;
-                    break;
-                case 2:
-                    newColor = ofColor::yellow;
-                    break;
-            }
-            cycleWalls.push_back(cycleWall(newColor, &p1));
-            //std::cout << "Placed new wall" << std::endl;
-        }
-        if((p2.getX() != p2.getLastX())||(p2.getY() != p2.getLastY())){
-            ofColor newColor;
-            switch(p1.getColour()){
-                case 0:
-                    newColor = ofColor::blue;
-                    break;
-                case 1:
-                    newColor = ofColor::red;
-                    break;
-                case 2:
-                    newColor = ofColor::yellow;
-                    break;
-            }
-            cycleWalls.push_back(cycleWall(newColor, &p1));
-            //std::cout << "Placed new wall" << std::endl;
-        }
 
         //Lighitng
         p1Light.setPosition(p1.getX(), p1.getY(), (p1.getZ() + 2));
@@ -178,6 +149,7 @@ void ofApp::update(){
         //Make sure the threads have finished
         collisionsMainThread.join();
         doGameObjectAI.join();
+        doPlayerWalls.join();
 
         switch(collRes){
             case 0:
@@ -404,12 +376,6 @@ void ofApp::handleKeyPress(){
         //Reset right flag when right is not pressed
         p1.setRightFlag(false);
     }
-    if (keyArray[119]){ //W
-        p1.moveCycle(true);
-    }
-    if(!keyArray[119]){
-        p1.moveCycle(false);
-    }
     if(keyArray[57358] == 1){ //Right Arrow
         cameraState = -1;
     } else if(keyArray[57356] == 1){ //Left Arrow
@@ -429,7 +395,39 @@ void ofApp::doAIForObjects(){
         g.doAI();
     }
 }
-
+void ofApp::doWalls(){
+    if((p1.getX() != p1.getLastX())||(p1.getY() != p1.getLastY())){
+        ofColor newColor;
+        switch(p1.getColour()){
+            case 0:
+                newColor = ofColor::blue;
+                break;
+            case 1:
+                newColor = ofColor::red;
+                break;
+            case 2:
+                newColor = ofColor::yellow;
+                break;
+        }
+        cycleWalls.push_back(cycleWall(newColor, &p1));
+        //std::cout << "Placed new wall" << std::endl;
+    }
+    if((p2.getX() != p2.getLastX())||(p2.getY() != p2.getLastY())){
+        ofColor newColor;
+        switch(p2.getColour()){
+            case 0:
+                newColor = ofColor::blue;
+                break;
+            case 1:
+                newColor = ofColor::red;
+                break;
+            case 2:
+                newColor = ofColor::yellow;
+                break;
+        }
+        cycleWalls.push_back(cycleWall(newColor, &p2));
+    }
+}
 void ofApp::collisions(){
     int res = 0;
     std::thread p1CollThread(&ofApp::doBodyCollisions, this, p1);

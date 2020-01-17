@@ -3,6 +3,7 @@
 #include "ofApp.h"
 #include "ofxAssimpModelLoader.h"
 
+#include <time.h>
 #include <cstring>
 
 //Constructors
@@ -72,7 +73,19 @@ void cycle::doAI(){
     //Only do stuff if the player is bot.
     if(this->isAI){
         //Do the AI processing here
+        if(target == current){
+            target = rand() % 30 + 1;
+            current = 0;
 
+            if((rand() % 2 + 1) == 1){
+                this->turnCycle(1);
+            } else {
+                this->turnCycle(2);
+            }
+
+        } else {
+            current++;
+        }
     }
 }
 void cycle::draw(){

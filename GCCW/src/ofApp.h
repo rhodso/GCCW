@@ -25,6 +25,7 @@ public:
     void doBodyCollisions(gameObject obj);
     void collide(gameObject obj1, gameObject obj2);
     void doAIForObjects();
+    void doWalls();
 
     //Unused
     void mouseMoved(int x, int y );

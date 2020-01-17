@@ -60,6 +60,9 @@ private:
     float indX;
     float indY;
     float indZ;
+
+    int target = 20;
+    int current = 0;
 };
 
 /*
