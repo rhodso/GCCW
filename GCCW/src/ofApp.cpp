@@ -1,5 +1,6 @@
 #include "ofApp.h"
 #include "cycle.h"
+#include "cyclewall.h"
 #include "time.h"
 #include <iostream>
 #include <thread>
@@ -54,6 +55,7 @@ void ofApp::setup(){
     p1.assignModel();
     p1.setDebugDraw(false);
     p1.setHeading(1);
+    p1.updateTurnCoords();
 
     //p2
     p2.setX(-80);
@@ -64,6 +66,7 @@ void ofApp::setup(){
     p2.assignModel();
     p2.setDebugDraw(false);
     p2.setHeading(3);
+    p2.updateTurnCoords();
 
     //Update cameraObject
     cameraObject = &p1;
@@ -103,11 +106,13 @@ void ofApp::setup(){
     b_resWatch = true;
 }
 void ofApp::update(){
+    std::cout << "Number of walls: " << cycleWalls.size() << std::endl;
+
     p1.moveCycle(true);
     p2.moveCycle(true);
     handleKeyPress();
 
-    if(winner == 0){
+    //if(winner == 0){
         //Update camera collisions in a seperate thread, because efficiency
         std::thread collisionsMainThread(&ofApp::collisions, this);
         std::thread doGameObjectAI(&ofApp::doAIForObjects, this);
@@ -166,10 +171,10 @@ void ofApp::update(){
 
         p2.updateLastX();
         p2.updateLastY();
-    }
+    //}
 }
 void ofApp::draw(){
-    if(winner == 0){
+    //if(winner == 0){
         //Need to draw everything twice in one thread because I can't
         //make openGL calls in anything but the main thread YAY
 
@@ -213,6 +218,7 @@ void ofApp::draw(){
 
             ofDrawBitmapString(ss.str().c_str(), 300,20);
         }
+    /*
     } else if(winner == 1){
         ofSetColor(ofColor::white);
         ofDrawBitmapString("A winner is you!", 50, 50);
@@ -222,6 +228,7 @@ void ofApp::draw(){
     }else {
         winner = 0;
     }
+    */
 }
 void ofApp::drawObjects(){
     //Background
@@ -236,16 +243,25 @@ void ofApp::drawObjects(){
         b.draw();
     }
 
+    p1TrailWall.draw();
+    p2TrailWall.draw();
+
+    int i = 0;
+
     //CycleWalls
     for(cycleWall w : cycleWalls){
         w.draw();
+        //std::cout << "Drawing wall " << i << std::endl;
+        i++;
     }
 
     //playerIndicator
     p1.drawIndicator();
     p2.drawIndicator();
 
-    ofSetColor(ofColor::white);
+    //ofSetColor(ofColor::white);
+
+    std::cout << "P1 pos X/Y/Z:\t" << std::endl << std::endl;
 
     //players
     p1.draw();
@@ -364,11 +380,13 @@ void ofApp::handleKeyPress(){
         //If left is pressed, turn left and then don't turn left again
         p1.setLeftFlag(true);
         p1.turnCycle(1);
-    }
+        placeWallFromTurn(p1);
+}
     else if (keyArray[100] == 1 && !p1.getRightFLag()){ //D
         //If right is pressed, turn right and don't turn right again
         p1.setRightFlag(true);
         p1.turnCycle(2);
+        placeWallFromTurn(p1);
     }
     if(p1.getLeftFlag() && keyArray[97] == 0){
         //Reset left flag when left is not pressed
@@ -392,43 +410,57 @@ void ofApp::handleKeyPress(){
         keyArray[57346] = 0;
     }
 }
+void ofApp::placeWallFromTurn(cycle c){
+    cycleWall placedWall = cycleWall();
+    placedWall.setX(c.getTurnX());
+    placedWall.setY(c.getTurnY());
+
+    switch((int) c.getHeading()){
+        case 1:
+            placedWall.setX(placedWall.getX() + 0.45);
+            placedWall.setY(placedWall.getY() + 0.37);
+            placedWall.setW(placedWall.getX() - c.getX());
+            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
+            placedWall.setH(0.5f);
+            placedWall.setL(1.0);
+            break;
+        case 2:
+            placedWall.setX(placedWall.getX() - 1.442);
+            placedWall.setY(placedWall.getY() + 1.5);
+            placedWall.setW(placedWall.getX() - c.getX());
+            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
+            placedWall.setH(0.5f);
+            placedWall.setL(1.0);
+            break;
+        case 3:
+            placedWall.setX(placedWall.getX() - 3.75);
+            placedWall.setY(placedWall.getY() - 0.45);
+            placedWall.setW(placedWall.getX() - c.getX());
+            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
+            placedWall.setH(0.5f);
+            placedWall.setL(1.0);
+            break;
+        case 4:
+            placedWall.setX(placedWall.getX() - 1.442);
+            placedWall.setY(placedWall.getY() - 2.35);
+            placedWall.setW(placedWall.getX() - c.getX());
+            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
+            placedWall.setH(0.5f);
+            placedWall.setL(1.0);
+            break;
+    }
+
+    cycleWalls.push_back(placedWall);
+
+}
 void ofApp::doAIForObjects(){
     for(gameObject g : aiObjects){
         g.doAI();
     }
 }
 void ofApp::doWalls(){
-    if((p1.getX() != p1.getLastX())||(p1.getY() != p1.getLastY())){
-        ofColor newColor;
-        switch(p1.getColour()){
-            case 0:
-                newColor = ofColor::blue;
-                break;
-            case 1:
-                newColor = ofColor::red;
-                break;
-            case 2:
-                newColor = ofColor::yellow;
-                break;
-        }
-        cycleWalls.push_back(cycleWall(newColor, &p1));
-        //std::cout << "Placed new wall" << std::endl;
-    }
-    if((p2.getX() != p2.getLastX())||(p2.getY() != p2.getLastY())){
-        ofColor newColor;
-        switch(p2.getColour()){
-            case 0:
-                newColor = ofColor::blue;
-                break;
-            case 1:
-                newColor = ofColor::red;
-                break;
-            case 2:
-                newColor = ofColor::yellow;
-                break;
-        }
-        cycleWalls.push_back(cycleWall(newColor, &p2));
-    }
+    p1TrailWall.placeTrailingWall(&p1);
+    p2TrailWall.placeTrailingWall(&p2);
 }
 void ofApp::collisions(){
     int res = 0;

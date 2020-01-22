@@ -57,9 +57,54 @@ void cycleWall::placeWall(cycle* c){
             break;
     }
 }
+void cycleWall::placeTrailingWall(cycle* c){
+    int cycleHeading = (int) c->getHeading();
+    this->heading = cycleHeading;
+    this->l = 1.0f;
 
+    switch(cycleHeading){
+        case 1:
+            this->x = c->getTurnX();
+            this->x += 0.45;
+            this->y = c->getTurnY();
+            this->y -= 0.37;
+            this->w = c->getTurnX() - c->getX();
+            //if(this->w < 0){ this->w *= -1; }
+            this->l = 0.5f;
+            break;
+        case 2:
+            this->x = c->getTurnX();
+            this->x -= 1.442;
+            this->y = c->getTurnY();
+            this->y += 1.5;
+            this->l = c->getTurnX() - c->getX();
+            //if(this->l < 0){ this->l *= -1; }
+            this->w = 0.5f;
+            break;
+        case 3:
+            this->x = c->getTurnX();
+            this->x -= 3.75;
+            this->y = c->getTurnY();
+            this->y -= 0.45;
+            this->w = c->getTurnX() - c->getX();
+            //if(this->w < 0){ this->w *= -1; }
+            this->l = 0.5f;
+            break;
+        case 4:
+            this->x = c->getTurnX();
+            this->x -= 1.422;
+            this->y = c->getTurnY();
+            this->y -= 2.35;
+            this->l = c->getTurnX() - c->getX();
+            //if(this->l < 0){ this->l *= -1; }
+            this->w = 0.5f;
+            break;
+    }
+}
 void cycleWall::draw(){
-    ofSetColor(this->color,128);
+    //ofSetColor(this->color,128);
+    ofSetColor(ofColor::yellow, 128);
     //std::cout << "Box x,y,z,w,h,l: " << x << " " << y << " " << " " << 0 << " " << w << " " << h << " " << l << std::endl;
-    ofDrawBox(x,y,0.6,w,h,l);
+    ofDrawBox(x,y,0.0,w,l,h);
+
 }

@@ -13,6 +13,7 @@ public:
     ~cycleWall();
 
     void placeWall(cycle* c);
+    void placeTrailingWall(cycle* c);
     void draw();
 
 private:

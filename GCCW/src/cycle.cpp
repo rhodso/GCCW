@@ -67,7 +67,9 @@ float cycle::getLastX(){ return lastX; }
 float cycle::getLastY(){ return lastY; }
 void cycle::updateLastX(){ this->lastX = this->x; }
 void cycle::updateLastY(){ this->lastY = this->y; }
-
+float cycle::getTurnX(){ return this->turnX; }
+float cycle::getTurnY(){ return this->turnY; }
+void cycle::updateTurnCoords(){ this->turnX = this->x; this->turnY = this->y; }
 //Inherited methods
 void cycle::doAI(){
     //Only do stuff if the player is bot.
@@ -214,7 +216,6 @@ void cycle::turnCycle(int turnDir){
     } else if(this->heading > 4){
         this->heading = 1;
     }
-
 }
 void cycle::moveCycle(bool accel){
     int tempHead = (int) this->heading;
