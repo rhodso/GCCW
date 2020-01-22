@@ -1,0 +1,12 @@
+Plan is:
+	1) Rewrite the wall creation funciton
+		Points:
+		A) Cycle draws walls until it turns
+		B) When cycle turns, wall is placed
+		C) Then cycle starts drawing new wall
+		D) Memes
+	2) Test performance
+	3) Multithread?
+	4) Test performance again
+	5) Panic lol
+
