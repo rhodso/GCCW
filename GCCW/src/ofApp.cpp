@@ -62,7 +62,7 @@ void ofApp::setup(){
     p2.setColour(2);
     p2.setZ(0.6f);
     p2.setActive(true);
-    p2.setIsAI(false);
+    p2.setIsAI(true);
     p2.assignModel();
     p2.setDebugDraw(false);
     p2.setHeading(3);
@@ -87,7 +87,7 @@ void ofApp::setup(){
     p2Light.lookAt({0,0,0});
     p2Light.setAmbientColor(ofColor::blue);
     p2Light.enable();
-    aiObjects.push_back(p2);
+    aiObjects.push_back(&p2);
 
     //Indicator light so that it doesn't look dark on the minimap
     p1IndicatorLight.setPosition(0,0,2);
@@ -370,14 +370,24 @@ void ofApp::handleKeyPress(){
     }
     if(keyArray[97] == 1 && !p1.getLeftFlag()){ //A
         //If left is pressed, turn left and then don't turn left again
-        placeWallFromTurn(p1);
+        float posDim[6];
+        float* posDimP = &posDim[0];
+        p1.placeWallFromTurn(posDimP);
+        cycleWall placedWall = cycleWall();
+        placedWall.placeWallFromCoords(posDim[0], posDim[1], posDim[2], posDim[3]);
+        cycleWalls.push_back(placedWall);
         p1.updateTurnCoords();
         p1.setLeftFlag(true);
         p1.turnCycle(1);        
 }
     else if (keyArray[100] == 1 && !p1.getRightFLag()){ //D
         //If right is pressed, turn right and don't turn right again
-        placeWallFromTurn(p1);
+        float posDim[6];
+        float* posDimP = &posDim[0];
+        p1.placeWallFromTurn(posDimP);
+        cycleWall placedWall = cycleWall();
+        placedWall.placeWallFromCoords(posDim[0], posDim[1], posDim[2], posDim[3]);
+        cycleWalls.push_back(placedWall);
         p1.updateTurnCoords();
         p1.setRightFlag(true);
         p1.turnCycle(2);
@@ -404,56 +414,31 @@ void ofApp::handleKeyPress(){
         keyArray[57346] = 0;
     }
 }
-void ofApp::placeWallFromTurn(cycle c){
 
-    cycleWall placedWall = cycleWall();
-
-    float offset = 1.5;
-
-    float l = 0.0f;
-    float w = 0.0f;
-    float x = 0.0f;
-    float y = 0.0f;
-
-    switch((int) c.getHeading()){
-        case 1:
-            l = c.getTurnX() - c.getX();
-            y = c.getY();
-            x = (c.getX()+c.getTurnX())/2;
-            x += offset;
-            w = 0.0f;
-            break;
-        case 2:
-            w = c.getTurnY() - c.getY();
-            x = c.getX();
-            y = (c.getY() + c.getTurnY())/2;
-            y += offset;
-            l = 0.0f;
-            break;
-        case 3:
-            l = c.getTurnX() - c.getX();
-            y = c.getY();
-            y = c.getY();
-            x = (c.getX()+c.getTurnX())/2;
-            x -= offset;
-            w = 0.0f;
-            break;
-        case 4:
-            w = c.getTurnY() - c.getY();
-            x = c.getX();
-            y = (c.getY() + c.getTurnY())/2;
-            y -= offset;
-            l = 0.0f;
-            break;
-    }
-
-    placedWall.placeWallFromCoords(x,y,l,w);
-    cycleWalls.push_back(placedWall);
-
-}
 void ofApp::doAIForObjects(){
-    for(gameObject g : aiObjects){
-        g.doAI();
+    for(cycle* c : aiObjects){
+        //Only do stuff if the player is bot.
+        if(c->getIsAI()){
+            //Do the AI processing here
+            if(c->getTarget() == c->getCurrent()){
+                c->setTarget(rand() % 30 + 30);
+                c->setCurrent(0);
+                float posDim[6];
+                float* posDimP = &posDim[0];
+                c->placeWallFromTurn(posDimP);
+                cycleWall placedWall = cycleWall();
+                placedWall.placeWallFromCoords(posDim[0], posDim[1], posDim[2], posDim[3]);
+                cycleWalls.push_back(placedWall);
+                c->updateTurnCoords();
+                if((rand() % 2 + 1) == 1){
+                    c->turnCycle(1);
+                } else {
+                    c->turnCycle(2);
+                }
+            } else {
+                c->setCurrent(c->getCurrent()+1);
+            }
+        }
     }
 }
 void ofApp::doWalls(){

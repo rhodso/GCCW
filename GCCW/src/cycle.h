@@ -34,7 +34,13 @@ public:
     void updateLastY();
     float getTurnX();
     float getTurnY();
+    void setTarget(int _target);
+    void setCurrent(int _current);
+    int getTarget();
+    int getCurrent();
+
     void updateTurnCoords();
+    void placeWallFromTurn(float* posDim);
 
     //Inherrited methods to override
     void doAI();

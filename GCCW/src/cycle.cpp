@@ -8,14 +8,12 @@
 
 //Constructors
 cycle::cycle(){}
-
 cycle::cycle(int _colour, bool _isAI){
     colour = _colour;
     isAI = _isAI;
     this->setColour(colour);
     this->setHeading(1);
 }
-
 cycle::cycle(int _colour, bool _isAI, float _x, float _y, float _z){
     colour = _colour;
     isAI = _isAI;
@@ -50,8 +48,6 @@ void cycle::setColour(int _colour){
             break;
     }
 }
-
-//Getters and Setters
 int cycle::getColour(){ return colour; }
 bool cycle::getActive(){ return active; }
 void cycle::setActive(bool _active) {active = _active;}
@@ -73,27 +69,64 @@ void cycle::updateTurnCoords(){
     this->turnX = this->x;
     this->turnY = this->y;
 }
+void cycle::placeWallFromTurn(float* posDim){
+
+    cycleWall placedWall = cycleWall();
+
+    float offset = 1.5;
+
+    float l = 0.0f;
+    float w = 0.0f;
+    float x = 0.0f;
+    float y = 0.0f;
+
+    switch((int) this->getHeading()){
+        case 1:
+            l = this->getTurnX() - this->getX();
+            y = this->getY();
+            x = (this->getX()+this->getTurnX())/2;
+            x += offset;
+            w = 0.0f;
+            break;
+        case 2:
+            w = this->getTurnY() - this->getY();
+            x = this->getX();
+            y = (this->getY() + this->getTurnY())/2;
+            y += offset;
+            l = 0.0f;
+            break;
+        case 3:
+            l = this->getTurnX() - this->getX();
+            y = this->getY();
+            y = this->getY();
+            x = (this->getX()+this->getTurnX())/2;
+            x -= offset;
+            w = 0.0f;
+            break;
+        case 4:
+            w = this->getTurnY() - this->getY();
+            x = this->getX();
+            y = (this->getY() + this->getTurnY())/2;
+            y -= offset;
+            l = 0.0f;
+            break;
+    }
+
+    placedWall.placeWallFromCoords(x,y,l,w);
+
+    posDim[0] = x;
+    posDim[1] = y;
+    posDim[2] = l;
+    posDim[3] = w;
+
+}
+void cycle::setTarget(int _target){ this->target = _target; }
+void cycle::setCurrent(int _current){ this->current = _current; }
+int cycle::getTarget(){ return this->target; }
+int cycle::getCurrent(){ return this->current; }
 
 //Inherited methods
-void cycle::doAI(){
-    //Only do stuff if the player is bot.
-    if(this->isAI){
-        //Do the AI processing here
-        if(target == current){
-            target = rand() % 30 + 1;
-            current = 0;
-
-            if((rand() % 2 + 1) == 1){
-                this->turnCycle(1);
-            } else {
-                this->turnCycle(2);
-            }
-
-        } else {
-            current++;
-        }
-    }
-}
+void cycle::doAI(){}
 void cycle::draw(){
     //Update OF position
     float rotationAmount;
@@ -146,7 +179,6 @@ void cycle::draw(){
     this->model.drawFaces();
     ofPopMatrix();
 }
-
 void cycle::drawIndicator(){
     //Update OF position
     float rotationAmount;

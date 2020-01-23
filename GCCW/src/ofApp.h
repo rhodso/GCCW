@@ -44,7 +44,7 @@ private:
     vector<gameObject> objects;
     vector<cycleWall> cycleWalls;
     vector<boundaryWall> boundaryWalls;
-    vector<gameObject> aiObjects;
+    vector<cycle*> aiObjects;
     ofPlanePrimitive groundPlane;
     cycle p1;
     cycle p2;
