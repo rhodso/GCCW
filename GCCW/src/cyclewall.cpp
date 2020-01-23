@@ -18,35 +18,41 @@ void cycleWall::placeWallFromCoords(float _x, float _y, float _l, float _w){
 
 void cycleWall::placeTrailingWall(cycle* c){
 
+    float offSet = 1.5;
+
     float l = 0.0f;
     float w = 0.0f;
     float x = 0.0f;
     float y = 0.0f;
 
     switch((int) c->getHeading()){
-        case 1:
+        case 1: //-ve X
             l = c->getTurnX() - c->getX();
             y = c->getY();
             x = (c->getX()+c->getTurnX())/2;
+            x += offSet;
             w = 1.0f;
             break;
         case 2:
             w = c->getTurnY() - c->getY();
             x = c->getX();
             y = (c->getY() + c->getTurnY())/2;
+            y += offSet;
             l = 1.0f;
             break;
-        case 3:
+        case 3: //+ve X
             l = c->getTurnX() - c->getX();
             y = c->getY();
             y = c->getY();
             x = (c->getX()+c->getTurnX())/2;
+            x -= offSet;
             w = 1.0f;
             break;
         case 4:
             w = c->getTurnY() - c->getY();
             x = c->getX();
             y = (c->getY() + c->getTurnY())/2;
+            y -= offSet;
             l = 1.0f;
             break;
     }
@@ -56,7 +62,6 @@ void cycleWall::placeTrailingWall(cycle* c){
 void cycleWall::draw(){
     //ofSetColor(this->color,128);
     ofSetColor(ofColor::yellow, 128);
-    //std::cout << "Box x,y,z,w,h,l: " << x << " " << y << " " << " " << 0 << " " << w << " " << h << " " << l << std::endl;
     ofDrawBox(x,y,0.5,l,w,h);
 
 }

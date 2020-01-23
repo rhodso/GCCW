@@ -106,13 +106,11 @@ void ofApp::setup(){
     b_resWatch = true;
 }
 void ofApp::update(){
-    std::cout << "Number of walls: " << cycleWalls.size() << std::endl;
-
     p1.moveCycle(true);
     p2.moveCycle(true);
     handleKeyPress();
 
-    //if(winner == 0){
+    if(winner == 0){
         //Update camera collisions in a seperate thread, because efficiency
         std::thread collisionsMainThread(&ofApp::collisions, this);
         std::thread doGameObjectAI(&ofApp::doAIForObjects, this);
@@ -171,10 +169,10 @@ void ofApp::update(){
 
         p2.updateLastX();
         p2.updateLastY();
-    //}
+    }
 }
 void ofApp::draw(){
-    //if(winner == 0){
+    if(winner == 0){
         //Need to draw everything twice in one thread because I can't
         //make openGL calls in anything but the main thread YAY
 
@@ -218,7 +216,7 @@ void ofApp::draw(){
 
             ofDrawBitmapString(ss.str().c_str(), 300,20);
         }
-    /*
+
     } else if(winner == 1){
         ofSetColor(ofColor::white);
         ofDrawBitmapString("A winner is you!", 50, 50);
@@ -228,10 +226,6 @@ void ofApp::draw(){
     }else {
         winner = 0;
     }
-    */
-
-
-    std::cout << std::endl;
 }
 void ofApp::drawObjects(){
     //Background
@@ -249,13 +243,9 @@ void ofApp::drawObjects(){
     p1TrailWall.draw();
     p2TrailWall.draw();
 
-    int i = 0;
-
     //CycleWalls
     for(cycleWall w : cycleWalls){
         w.draw();
-        //std::cout << "Drawing wall " << i << std::endl;
-        i++;
     }
 
     //playerIndicator
@@ -268,7 +258,7 @@ void ofApp::drawObjects(){
     p1.draw();
     p2.draw();
 }
-void ofApp::keyPressed(int key){ keyArray[key] = 1; std::cout << key << std::endl; }
+void ofApp::keyPressed(int key){ keyArray[key] = 1; }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
 void ofApp::updateCamera(){
 
@@ -417,6 +407,8 @@ void ofApp::placeWallFromTurn(cycle c){
 
     cycleWall placedWall = cycleWall();
 
+    float offset = 1.5;
+
     float l = 0.0f;
     float w = 0.0f;
     float x = 0.0f;
@@ -427,12 +419,14 @@ void ofApp::placeWallFromTurn(cycle c){
             l = c.getTurnX() - c.getX();
             y = c.getY();
             x = (c.getX()+c.getTurnX())/2;
+            x += offset;
             w = 0.0f;
             break;
         case 2:
             w = c.getTurnY() - c.getY();
             x = c.getX();
             y = (c.getY() + c.getTurnY())/2;
+            y += offset;
             l = 0.0f;
             break;
         case 3:
@@ -440,12 +434,14 @@ void ofApp::placeWallFromTurn(cycle c){
             y = c.getY();
             y = c.getY();
             x = (c.getX()+c.getTurnX())/2;
+            x -= offset;
             w = 0.0f;
             break;
         case 4:
             w = c.getTurnY() - c.getY();
             x = c.getX();
             y = (c.getY() + c.getTurnY())/2;
+            y -= offset;
             l = 0.0f;
             break;
     }
