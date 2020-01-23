@@ -110,7 +110,7 @@ void ofApp::update(){
     p2.moveCycle(true);
     handleKeyPress();
 
-    //if(winner == 0){
+    if(winner == 0){
         //Update camera collisions in a seperate thread, because efficiency
         std::thread collisionsMainThread(&ofApp::collisions, this);
         std::thread doGameObjectAI(&ofApp::doAIForObjects, this);
@@ -169,10 +169,10 @@ void ofApp::update(){
 
         p2.updateLastX();
         p2.updateLastY();
-    //}
+    }
 }
 void ofApp::draw(){
-    //if(winner == 0){
+    if(winner == 0){
         //Need to draw everything twice in one thread because I can't
         //make openGL calls in anything but the main thread YAY
 
@@ -216,17 +216,17 @@ void ofApp::draw(){
 
             ofDrawBitmapString(ss.str().c_str(), 300,20);
         }
-/*
+
     } else if(winner == 1){
         ofSetColor(ofColor::white);
-        ofDrawBitmapString("A winner is you!", 50, 50);
+        ofDrawBitmapString("You win!", 50, 50);
     } else if(winner == 2){
         ofSetColor(ofColor::white);
-        ofDrawBitmapString("A winner isn't you!", 50, 50);
+        ofDrawBitmapString("You lost", 50, 50);
     }else {
         winner = 0;
     }
-    */
+
 }
 void ofApp::drawObjects(){
     //Background
