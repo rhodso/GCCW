@@ -460,8 +460,8 @@ void ofApp::doAIForObjects(){
     }
 }
 void ofApp::doWalls(){
-    p1TrailWall.placeTrailingWall(&p1, true);
-    p2TrailWall.placeTrailingWall(&p2, false);
+    p1TrailWall.placeTrailingWall(&p1);
+    p2TrailWall.placeTrailingWall(&p2);
 }
 void ofApp::collisions(){
     int res = 0;
