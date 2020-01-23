@@ -229,6 +229,9 @@ void ofApp::draw(){
         winner = 0;
     }
     */
+
+
+    std::cout << std::endl;
 }
 void ofApp::drawObjects(){
     //Background
@@ -261,13 +264,11 @@ void ofApp::drawObjects(){
 
     //ofSetColor(ofColor::white);
 
-    std::cout << "P1 pos X/Y/Z:\t" << std::endl << std::endl;
-
     //players
     p1.draw();
     p2.draw();
 }
-void ofApp::keyPressed(int key){ keyArray[key] = 1; }
+void ofApp::keyPressed(int key){ keyArray[key] = 1; std::cout << key << std::endl; }
 void ofApp::keyReleased(int key){ keyArray[key] = 0; }
 void ofApp::updateCamera(){
 
@@ -378,15 +379,17 @@ void ofApp::handleKeyPress(){
     }
     if(keyArray[97] == 1 && !p1.getLeftFlag()){ //A
         //If left is pressed, turn left and then don't turn left again
-        p1.setLeftFlag(true);
-        p1.turnCycle(1);
         placeWallFromTurn(p1);
+        p1.updateTurnCoords();
+        p1.setLeftFlag(true);
+        p1.turnCycle(1);        
 }
     else if (keyArray[100] == 1 && !p1.getRightFLag()){ //D
         //If right is pressed, turn right and don't turn right again
+        placeWallFromTurn(p1);
+        p1.updateTurnCoords();
         p1.setRightFlag(true);
         p1.turnCycle(2);
-        placeWallFromTurn(p1);
     }
     if(p1.getLeftFlag() && keyArray[97] == 0){
         //Reset left flag when left is not pressed
@@ -411,45 +414,43 @@ void ofApp::handleKeyPress(){
     }
 }
 void ofApp::placeWallFromTurn(cycle c){
+
     cycleWall placedWall = cycleWall();
-    placedWall.setX(c.getTurnX());
-    placedWall.setY(c.getTurnY());
+
+    float l = 0.0f;
+    float w = 0.0f;
+    float x = 0.0f;
+    float y = 0.0f;
 
     switch((int) c.getHeading()){
         case 1:
-            placedWall.setX(placedWall.getX() + 0.45);
-            placedWall.setY(placedWall.getY() + 0.37);
-            placedWall.setW(placedWall.getX() - c.getX());
-            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
-            placedWall.setH(0.5f);
-            placedWall.setL(1.0);
+            l = c.getTurnX() - c.getX();
+            y = c.getY();
+            x = (c.getX()+c.getTurnX())/2;
+            w = 0.0f;
             break;
         case 2:
-            placedWall.setX(placedWall.getX() - 1.442);
-            placedWall.setY(placedWall.getY() + 1.5);
-            placedWall.setW(placedWall.getX() - c.getX());
-            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
-            placedWall.setH(0.5f);
-            placedWall.setL(1.0);
+            w = c.getTurnY() - c.getY();
+            x = c.getX();
+            y = (c.getY() + c.getTurnY())/2;
+            l = 0.0f;
             break;
         case 3:
-            placedWall.setX(placedWall.getX() - 3.75);
-            placedWall.setY(placedWall.getY() - 0.45);
-            placedWall.setW(placedWall.getX() - c.getX());
-            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
-            placedWall.setH(0.5f);
-            placedWall.setL(1.0);
+            l = c.getTurnX() - c.getX();
+            y = c.getY();
+            y = c.getY();
+            x = (c.getX()+c.getTurnX())/2;
+            w = 0.0f;
             break;
         case 4:
-            placedWall.setX(placedWall.getX() - 1.442);
-            placedWall.setY(placedWall.getY() - 2.35);
-            placedWall.setW(placedWall.getX() - c.getX());
-            //if(placedWall.getW() < 0){ placedWall.setW(placedWall.getW() * -1); }
-            placedWall.setH(0.5f);
-            placedWall.setL(1.0);
+            w = c.getTurnY() - c.getY();
+            x = c.getX();
+            y = (c.getY() + c.getTurnY())/2;
+            l = 0.0f;
             break;
     }
 
+    placedWall.placeWallFromCoords(x,y,l,w);
     cycleWalls.push_back(placedWall);
 
 }
@@ -459,8 +460,8 @@ void ofApp::doAIForObjects(){
     }
 }
 void ofApp::doWalls(){
-    p1TrailWall.placeTrailingWall(&p1);
-    p2TrailWall.placeTrailingWall(&p2);
+    p1TrailWall.placeTrailingWall(&p1, true);
+    p2TrailWall.placeTrailingWall(&p2, false);
 }
 void ofApp::collisions(){
     int res = 0;

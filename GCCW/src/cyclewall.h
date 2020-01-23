@@ -12,7 +12,7 @@ public:
     cycleWall(ofColor _color, cycle* c);
     ~cycleWall();
 
-    void placeWall(cycle* c);
+    void placeWallFromCoords(float _x, float _y, float _w, float _l);
     void placeTrailingWall(cycle* c);
     void draw();
 

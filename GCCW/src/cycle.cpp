@@ -69,7 +69,11 @@ void cycle::updateLastX(){ this->lastX = this->x; }
 void cycle::updateLastY(){ this->lastY = this->y; }
 float cycle::getTurnX(){ return this->turnX; }
 float cycle::getTurnY(){ return this->turnY; }
-void cycle::updateTurnCoords(){ this->turnX = this->x; this->turnY = this->y; }
+void cycle::updateTurnCoords(){
+    this->turnX = this->x;
+    this->turnY = this->y;
+}
+
 //Inherited methods
 void cycle::doAI(){
     //Only do stuff if the player is bot.
