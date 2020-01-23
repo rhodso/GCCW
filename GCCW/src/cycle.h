@@ -2,6 +2,7 @@
 #define CYCLE_H
 
 #include "gameobject.h"
+//#include "cyclewall.h"
 
 class cycle : public gameObject
 {
@@ -31,6 +32,15 @@ public:
     void updateLastX();
     float getLastY();
     void updateLastY();
+    float getTurnX();
+    float getTurnY();
+    void setTarget(int _target);
+    void setCurrent(int _current);
+    int getTarget();
+    int getCurrent();
+
+    void updateTurnCoords();
+    void placeWallFromTurn(float* posDim);
 
     //Inherrited methods to override
     void doAI();
@@ -56,6 +66,9 @@ private:
 
     float lastX;
     float lastY;
+
+    float turnX;
+    float turnY;
 
     float indX;
     float indY;

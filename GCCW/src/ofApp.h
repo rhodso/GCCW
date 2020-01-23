@@ -26,6 +26,7 @@ public:
     void collide(gameObject obj1, gameObject obj2);
     void doAIForObjects();
     void doWalls();
+    void placeWallFromTurn(cycle c);
 
     //Unused
     void mouseMoved(int x, int y );
@@ -43,10 +44,12 @@ private:
     vector<gameObject> objects;
     vector<cycleWall> cycleWalls;
     vector<boundaryWall> boundaryWalls;
-    vector<gameObject> aiObjects;
+    vector<cycle*> aiObjects;
     ofPlanePrimitive groundPlane;
     cycle p1;
     cycle p2;
+    cycleWall p1TrailWall;
+    cycleWall p2TrailWall;
 
     //Camera stuff
     ofEasyCam playerCam;
