@@ -3,10 +3,10 @@ import qbs.Process
 import qbs.File
 import qbs.FileInfo
 import qbs.TextFile
-import "/opt/of/libs/openFrameworksCompiled/project/qtcreator/ofApp.qbs" as ofApp
+import "/home/rhodso/oF/libs/openFrameworksCompiled/project/qtcreator/ofApp.qbs" as ofApp
 
 Project{
-    property string of_root: '/opt/of'
+    property string of_root: '/home/rhodso/oF'
 
     ofApp {
         name: { return FileInfo.baseName(sourceDirectory) }
