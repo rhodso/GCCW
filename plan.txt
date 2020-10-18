@@ -1,12 +1,16 @@
 Plan is:
-	1) Rewrite the wall creation funciton
-		Points:
-		A) Cycle draws walls until it turns
-		B) When cycle turns, wall is placed
-		C) Then cycle starts drawing new wall
-		D) Memes
-	2) Test performance
-	3) Multithread?
-	4) Test performance again
-	5) Panic lol
-
+	1) Increase the height of the balls so they're not seen
+	2) Actually make the thing like work and shit
+		2.1) Win detection
+		2.2) AI improvements
+		2.3) Performance gainz
+		2.4)?????
+	3) Profit*
+	4) Show to games company
+	5) Beg them to hire me
+	6) Promise my commit history won't be shit
+	
+	
+	
+	
+* Note: Profit not needed, this is an open source project
